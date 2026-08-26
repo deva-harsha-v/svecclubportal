@@ -4,7 +4,7 @@ import { ArrowLeft, Upload, Plus, Trash2, CheckCircle2, Image as ImageIcon } fro
 import { api } from '../../services/api';
 import { ClubLead } from '../../types';
 import { LoadingSpinner } from '../../components/ui/LoadingSpinner';
-import { getLogoUrl } from '../../utils/logoHelper';
+import { getLogoUrl, compressImage } from '../../utils/logoHelper';
 
 export const ClubEditorPage: React.FC = () => {
   const { slug } = useParams<{ slug: string }>();
@@ -103,15 +103,23 @@ export const ClubEditorPage: React.FC = () => {
         .filter(Boolean);
 
       let uploadedLogoUrl = formData.logo;
-      if (logoFile) {
-        const logoRes = await api.uploadLogo(formData.slug || 'temp', logoFile);
-        uploadedLogoUrl = logoRes.logo_url;
+      if (logoFile && !uploadedLogoUrl.startsWith('data:')) {
+        try {
+          const logoRes = await api.uploadLogo(formData.slug || 'temp', logoFile);
+          uploadedLogoUrl = logoRes.logo_url;
+        } catch {
+          // Keep base64 if server upload fails
+        }
       }
 
       let uploadedBannerUrl = formData.banner;
-      if (bannerFile) {
-        const bannerRes = await api.uploadBanner(formData.slug || 'temp', bannerFile);
-        uploadedBannerUrl = bannerRes.banner_url;
+      if (bannerFile && !uploadedBannerUrl.startsWith('data:')) {
+        try {
+          const bannerRes = await api.uploadBanner(formData.slug || 'temp', bannerFile);
+          uploadedBannerUrl = bannerRes.banner_url;
+        } catch {
+          // Keep base64 if server upload fails
+        }
       }
 
       const payload = {
@@ -281,10 +289,10 @@ export const ClubEditorPage: React.FC = () => {
             <div>
               <label className={labelClasses}>Club Emblem / Logo Image</label>
               <div className="flex items-center gap-4 mt-1.5">
-                {(logoFile || formData.logo) && (
+                {formData.logo && (
                   <div className="w-14 h-14 rounded-2xl bg-[#010030] border border-[#7226FF]/40 p-1 flex items-center justify-center overflow-hidden shrink-0">
                     <img
-                      src={logoFile ? URL.createObjectURL(logoFile) : formData.logo}
+                      src={getLogoUrl(formData.logo)}
                       alt="Logo Preview"
                       className="w-full h-full object-contain"
                     />
@@ -292,13 +300,16 @@ export const ClubEditorPage: React.FC = () => {
                 )}
                 <label className="cursor-pointer inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-[#010030]/80 border border-[#7226FF]/35 text-xs font-mono text-[#FFE5F1] hover:border-[#F042FF] transition">
                   <Upload className="w-4 h-4 text-[#87F5F5]" />
-                  <span>{logoFile ? logoFile.name : 'Upload Emblem Logo'}</span>
+                  <span>{logoFile ? logoFile.name : 'Upload Emblem Logo File'}</span>
                   <input
                     type="file"
                     accept="image/*"
-                    onChange={(e) => {
+                    onChange={async (e) => {
                       if (e.target.files && e.target.files[0]) {
-                        setLogoFile(e.target.files[0]);
+                        const file = e.target.files[0];
+                        setLogoFile(file);
+                        const dataUrl = await compressImage(file, 400, 400, 0.9);
+                        setFormData((prev) => ({ ...prev, logo: dataUrl }));
                       }
                     }}
                     className="hidden"
@@ -311,10 +322,10 @@ export const ClubEditorPage: React.FC = () => {
             <div>
               <label className={labelClasses}>Header Cover Banner Picture (Replaces Large Gradient Area)</label>
               <div className="space-y-2 mt-1.5">
-                {(bannerFile || formData.banner) && (
-                  <div className="w-full h-24 rounded-2xl bg-[#010030] border border-[#7226FF]/40 p-1 flex items-center justify-center overflow-hidden shrink-0 relative">
+                {formData.banner && (
+                  <div className="w-full h-28 rounded-2xl bg-[#010030] border border-[#7226FF]/40 p-1 flex items-center justify-center overflow-hidden shrink-0 relative">
                     <img
-                      src={bannerFile ? URL.createObjectURL(bannerFile) : getLogoUrl(formData.banner)}
+                      src={getLogoUrl(formData.banner)}
                       alt="Banner Preview"
                       className="w-full h-full object-cover rounded-xl"
                     />
@@ -326,20 +337,23 @@ export const ClubEditorPage: React.FC = () => {
                 <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
                   <input
                     type="text"
-                    placeholder="Paste image URL (e.g. https://... or /api/uploads/...)"
+                    placeholder="Paste image URL (e.g. https://...)"
                     value={formData.banner}
                     onChange={(e) => setFormData({ ...formData, banner: e.target.value })}
                     className={inputClasses}
                   />
                   <label className="cursor-pointer inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-[#010030]/80 border border-[#7226FF]/35 text-xs font-mono text-[#FFE5F1] hover:border-[#F042FF] transition shrink-0 whitespace-nowrap">
                     <ImageIcon className="w-4 h-4 text-[#F042FF]" />
-                    <span>{bannerFile ? bannerFile.name : 'Upload File'}</span>
+                    <span>{bannerFile ? bannerFile.name : 'Upload Picture File'}</span>
                     <input
                       type="file"
                       accept="image/*"
-                      onChange={(e) => {
+                      onChange={async (e) => {
                         if (e.target.files && e.target.files[0]) {
-                          setBannerFile(e.target.files[0]);
+                          const file = e.target.files[0];
+                          setBannerFile(file);
+                          const dataUrl = await compressImage(file, 1200, 600, 0.85);
+                          setFormData((prev) => ({ ...prev, banner: dataUrl }));
                         }
                       }}
                       className="hidden"
