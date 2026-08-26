@@ -18,21 +18,24 @@ def _require(name: str, default: str | None = None) -> str:
     return val
 
 
-_raw_db_url = _require("DATABASE_URL", "sqlite:///./clubfair.db").strip()
+_raw_db_url = _require("DATABASE_URL", "sqlite:///./clubfair.db").strip().strip('"').strip("'")
 if _raw_db_url.startswith("DATABASE_URL="):
-    _raw_db_url = _raw_db_url[len("DATABASE_URL="):].strip()
+    _raw_db_url = _raw_db_url[len("DATABASE_URL="):].strip().strip('"').strip("'")
 
 DATABASE_URL: str = _raw_db_url
-JWT_SECRET: str = _require("JWT_SECRET", "dev-only-insecure-secret-change-me")
+JWT_SECRET: str = _require("JWT_SECRET", "dev-only-insecure-secret-change-me").strip().strip('"').strip("'")
 
 JWT_ALGORITHM: str = "HS256"
 ACCESS_TOKEN_EXPIRE_MINUTES: int = int(os.getenv("ACCESS_TOKEN_EXPIRE_MINUTES", "480"))
 
+_raw_cors = os.getenv("CORS_ORIGINS", "*")
 CORS_ORIGINS: list[str] = [
-    origin.strip()
-    for origin in os.getenv("CORS_ORIGINS", "*").split(",")
-    if origin.strip()
+    origin.strip().strip('"').strip("'")
+    for origin in _raw_cors.split(",")
+    if origin.strip().strip('"').strip("'")
 ]
+if "*" not in CORS_ORIGINS:
+    CORS_ORIGINS.append("*")
 
-INITIAL_ADMIN_USERNAME: str = os.getenv("INITIAL_ADMIN_USERNAME", "admin")
-INITIAL_ADMIN_PASSWORD: str = os.getenv("INITIAL_ADMIN_PASSWORD", "changeme_immediately")
+INITIAL_ADMIN_USERNAME: str = os.getenv("INITIAL_ADMIN_USERNAME", "admin").strip().strip('"').strip("'")
+INITIAL_ADMIN_PASSWORD: str = os.getenv("INITIAL_ADMIN_PASSWORD", "changeme_immediately").strip().strip('"').strip("'")
