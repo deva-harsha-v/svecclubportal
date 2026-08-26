@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { Play, Pause, ChevronLeft, ChevronRight, Heart } from 'lucide-react';
 import { ClubSummary } from '../../types';
 import { getClubAccent } from '../../utils/categoryIcons';
+import { getLogoUrl } from '../../utils/logoHelper';
 
 interface FloatingShowcaseProps {
   clubs?: ClubSummary[];
@@ -109,6 +110,11 @@ export const FloatingShowcase: React.FC<FloatingShowcaseProps> = ({ clubs = [] }
           let zIndex = 30 - Math.abs(offset) * 5;
           let opacity = isActive ? 1 : 0.7 - Math.abs(offset) * 0.15;
 
+          // Find real club match from clubs prop
+          const realClub = clubs?.find((c) => c.slug.includes(item.slug) || item.slug.includes(c.slug));
+          const logoUrl = getLogoUrl(realClub?.logo);
+          const bannerUrl = getLogoUrl(realClub?.banner);
+
           return (
             <div
               key={item.name}
@@ -131,6 +137,16 @@ export const FloatingShowcase: React.FC<FloatingShowcaseProps> = ({ clubs = [] }
               <div
                 className={`w-full h-28 sm:h-32 rounded-2xl bg-gradient-to-br ${accent.gradientBg} border border-white/10 p-3 flex flex-col justify-between relative overflow-hidden group shadow-inner`}
               >
+                {/* Custom Banner Cover Image if set */}
+                {bannerUrl && (
+                  <img
+                    src={bannerUrl}
+                    alt={item.name}
+                    className="absolute inset-0 w-full h-full object-cover z-0 opacity-80 group-hover:scale-105 transition-transform duration-500"
+                  />
+                )}
+                <div className="absolute inset-0 bg-gradient-to-t from-[#010030]/90 via-[#160078]/40 to-transparent z-0 pointer-events-none" />
+
                 <div className="flex items-center justify-between z-10">
                   <span className={`font-mono text-[9px] font-bold border px-2 py-0.5 rounded-full uppercase tracking-wider ${accent.badgeClass}`}>
                     {accent.categoryLabel}
@@ -139,8 +155,12 @@ export const FloatingShowcase: React.FC<FloatingShowcaseProps> = ({ clubs = [] }
                 </div>
 
                 <div className="flex items-center gap-2.5 z-10">
-                  <div className="w-8 h-8 sm:w-9 sm:h-9 rounded-xl bg-black/40 backdrop-blur-md border border-white/20 flex items-center justify-center shrink-0">
-                    {accent.icon}
+                  <div className="w-8 h-8 sm:w-9 sm:h-9 rounded-xl bg-black/40 backdrop-blur-md border border-white/20 p-0.5 flex items-center justify-center shrink-0 overflow-hidden shadow-md">
+                    {logoUrl ? (
+                      <img src={logoUrl} alt={item.name} className="w-full h-full object-contain rounded-lg" />
+                    ) : (
+                      accent.icon
+                    )}
                   </div>
                   <div className="min-w-0">
                     <span className="font-mono text-[9px] font-bold text-[#87F5F5] uppercase block truncate">

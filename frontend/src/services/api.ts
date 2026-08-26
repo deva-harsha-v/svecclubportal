@@ -109,6 +109,22 @@ export const api = {
     return response.json();
   },
 
+  uploadBanner: async (slug: string, file: File): Promise<{ banner_url: string }> => {
+    const formData = new FormData();
+    formData.append('file', file);
+
+    const response = await fetch(`${API_BASE}/api/admin/clubs/${slug}/banner`, {
+      method: 'POST',
+      headers: authService.getAuthHeader(),
+      body: formData,
+    });
+
+    if (!response.ok) {
+      throw new Error('Banner upload failed.');
+    }
+    return response.json();
+  },
+
   getStudents: (search?: string, branch?: string, limit = 50, offset = 0) => {
     const params = new URLSearchParams({ limit: String(limit), offset: String(offset) });
     if (search) params.set('search', search);

@@ -82,8 +82,15 @@ export const ClubDetailsPage: React.FC = () => {
 
           {/* 1. LARGE CLUB VISUAL / MEDIA AREA (Hero Card Visual Area) */}
           <div className={`w-full h-56 sm:h-72 rounded-3xl bg-gradient-to-br ${accent.gradientBg} border border-[#7226FF]/30 p-6 flex flex-col justify-between relative shadow-[0_0_30px_rgba(114,38,255,0.2)] overflow-hidden group`}>
-            {/* Ambient lighting effect inside media */}
-            <div className="absolute -bottom-10 -right-10 w-60 h-60 rounded-full bg-[#F042FF]/20 blur-2xl pointer-events-none" />
+            {/* Custom Banner Cover Image if set */}
+            {club.banner && (
+              <img
+                src={getLogoUrl(club.banner)}
+                alt={club.name}
+                className="absolute inset-0 w-full h-full object-cover z-0 opacity-80 group-hover:scale-105 transition-transform duration-700"
+              />
+            )}
+            <div className="absolute inset-0 bg-gradient-to-t from-[#010030]/90 via-[#160078]/50 to-transparent z-0 pointer-events-none" />
 
             {/* Top Row: Category & Heart Favorite Toggle */}
             <div className="flex items-center justify-between z-10">
