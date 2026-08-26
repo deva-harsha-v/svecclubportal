@@ -1,0 +1,26 @@
+# Dependencies
+node_modules/
+backend/venv/
+backend/.venv/
+env/
+venv/
+
+# Build & Output
+frontend/dist/
+frontend/build/
+*.pyc
+__pycache__/
+.pytest_cache/
+
+# Environment & Database Files
+.env
+*.db
+*.sqlite3
+
+# Logs & System
+*.log
+.DS_Store
+Thumbs.db
+
+# Scratch temp files
+scratch/

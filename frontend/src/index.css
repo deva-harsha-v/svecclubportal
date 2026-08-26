@@ -1,0 +1,160 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --bg-primary: #010030;
+  --bg-secondary: #160078;
+
+  --accent: #7226FF;
+  --accent-secondary: #F042FF;
+  --accent-cyan: #87F5F5;
+
+  --text-primary: #FFE5F1;
+  --text-secondary: rgba(255, 229, 241, 0.68);
+  --text-muted: rgba(255, 229, 241, 0.45);
+
+  --surface: rgba(22, 0, 120, 0.28);
+  --surface-hover: rgba(114, 38, 255, 0.16);
+
+  --border: rgba(135, 245, 245, 0.14);
+  --border-hover: rgba(240, 66, 255, 0.45);
+
+  --shadow: rgba(1, 0, 48, 0.45);
+}
+
+@layer base {
+  body {
+    background-color: var(--bg-primary);
+    color: var(--text-primary);
+    font-family: 'Inter', system-ui, sans-serif;
+    -webkit-tap-highlight-color: transparent;
+    overflow-x: hidden;
+  }
+
+  h1, h2, h3, .font-display {
+    font-family: 'Space Grotesk', 'Inter', system-ui, sans-serif;
+  }
+
+  .font-mono {
+    font-family: 'IBM Plex Mono', monospace;
+  }
+}
+
+/* Atmospheric Layered Background */
+.portal-bg {
+  background-color: var(--bg-primary);
+  background-image:
+    radial-gradient(circle at 75% 10%, rgba(114, 38, 255, 0.22), transparent 35%),
+    radial-gradient(circle at 15% 45%, rgba(240, 66, 255, 0.08), transparent 30%),
+    radial-gradient(rgba(135, 245, 245, 0.04) 1px, transparent 1px);
+  background-size: 100% 100%, 100% 100%, 24px 24px;
+}
+
+/* Translucent Glass Panel & Card Utilities */
+.glass-panel {
+  background: rgba(22, 0, 120, 0.35);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid var(--border);
+}
+
+.glass-card {
+  background: rgba(22, 0, 120, 0.38);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid var(--border);
+  box-shadow: 0 12px 30px var(--shadow);
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.glass-card:hover {
+  background: var(--surface-hover);
+  border-color: var(--border-hover);
+  transform: translateY(-3px);
+  box-shadow: 0 16px 36px var(--shadow), 0 0 28px rgba(114, 38, 255, 0.16);
+}
+
+/* Buttons */
+.btn-primary-gradient {
+  background: linear-gradient(135deg, var(--accent) 0%, var(--accent-secondary) 100%);
+  color: var(--text-primary);
+  box-shadow: 0 0 20px -2px rgba(240, 66, 255, 0.35);
+  transition: all 0.2s ease-out;
+}
+
+.btn-primary-gradient:hover {
+  filter: brightness(1.12);
+  transform: translateY(-2px);
+  box-shadow: 0 0 28px -1px rgba(240, 66, 255, 0.50);
+}
+
+.btn-primary-gradient:active {
+  transform: translateY(0px) scale(0.98);
+}
+
+.btn-secondary-translucent {
+  background: rgba(22, 0, 120, 0.40);
+  border: 1px solid var(--border);
+  color: var(--text-primary);
+  transition: all 0.2s ease;
+}
+
+.btn-secondary-translucent:hover {
+  border-color: var(--accent-secondary);
+  color: #white;
+  background: rgba(114, 38, 255, 0.16);
+}
+
+/* Custom Input Styling */
+.admin-input {
+  background: rgba(1, 0, 48, 0.65);
+  border: 1px solid var(--border);
+  color: var(--text-primary);
+  transition: all 0.2s ease;
+}
+
+.admin-input:focus {
+  outline: none;
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px rgba(114, 38, 255, 0.15);
+}
+
+/* Table styling */
+.admin-table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+}
+
+.admin-table th {
+  background: rgba(1, 0, 48, 0.75);
+  color: var(--text-muted);
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  padding: 12px 16px;
+  border-bottom: 1px solid var(--border);
+}
+
+.admin-table td {
+  padding: 14px 16px;
+  border-bottom: 1px solid rgba(135, 245, 245, 0.08);
+  font-size: 13px;
+  color: var(--text-primary);
+}
+
+.admin-table tr:hover td {
+  background: rgba(114, 38, 255, 0.08);
+}
+
+/* No Scrollbar Utility */
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
