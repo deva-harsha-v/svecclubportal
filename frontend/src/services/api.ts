@@ -14,7 +14,7 @@ import {
 } from '../types';
 import { authService } from './auth';
 
-const API_BASE = (import.meta as any).env?.VITE_API_BASE || '';
+const API_BASE = (import.meta as any).env?.VITE_API_BASE_URL || (import.meta as any).env?.VITE_API_BASE || '';
 
 async function request<T>(endpoint: string, options: RequestInit = {}): Promise<T> {
   const headers = {
