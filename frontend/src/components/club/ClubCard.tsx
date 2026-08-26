@@ -4,6 +4,8 @@ import { Check } from 'lucide-react';
 import { ClubSummary } from '../../types';
 import { getClubAccent } from '../../utils/categoryIcons';
 
+import { getLogoUrl } from '../../utils/logoHelper';
+
 interface ClubCardProps {
   club: ClubSummary;
   isSelected: boolean;
@@ -21,6 +23,8 @@ export const ClubCard: React.FC<ClubCardProps> = ({
   const handleCardClick = () => {
     navigate(`/clubs/${club.slug}`);
   };
+
+  const logoUrl = getLogoUrl(club.logo);
 
   return (
     <div
@@ -55,8 +59,8 @@ export const ClubCard: React.FC<ClubCardProps> = ({
         {/* Top Icon & Category Row */}
         <div className="flex items-center gap-3 mb-3 pr-20">
           <div className="w-10 h-10 sm:w-11 sm:h-11 rounded-xl bg-[#010030]/60 border border-[rgba(135,245,245,0.15)] p-1 flex items-center justify-center overflow-hidden group-hover:scale-105 transition-transform shrink-0 shadow-inner">
-            {club.logo && (club.logo.startsWith('http') || club.logo.startsWith('/')) ? (
-              <img src={club.logo} alt={club.name} className="w-full h-full object-contain rounded-lg" />
+            {logoUrl ? (
+              <img src={logoUrl} alt={club.name} className="w-full h-full object-contain rounded-lg" />
             ) : (
               accent.icon
             )}

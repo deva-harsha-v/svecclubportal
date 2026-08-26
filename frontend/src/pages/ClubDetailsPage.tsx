@@ -7,6 +7,7 @@ import { LoadingSpinner } from '../components/ui/LoadingSpinner';
 import { useClubSelection } from '../hooks/useClubSelection';
 import { getClubAccent } from '../utils/categoryIcons';
 import { RegistrationProgress } from '../components/registration/RegistrationProgress';
+import { getLogoUrl } from '../utils/logoHelper';
 
 export const ClubDetailsPage: React.FC = () => {
   const { slug } = useParams<{ slug: string }>();
@@ -99,12 +100,11 @@ export const ClubDetailsPage: React.FC = () => {
                 <Heart className={`w-4 h-4 ${isLiked ? 'fill-white' : ''}`} />
               </button>
             </div>
-
             {/* Bottom Row inside Media: Logo & SVEC Brand */}
             <div className="flex items-center gap-4 z-10">
               <div className="w-16 h-16 rounded-2xl bg-black/40 backdrop-blur-md border border-white/20 p-1 flex items-center justify-center overflow-hidden shadow-lg">
-                {club.logo && (club.logo.startsWith('http') || club.logo.startsWith('/')) ? (
-                  <img src={club.logo} alt={club.name} className="w-full h-full object-contain rounded-xl" />
+                {getLogoUrl(club.logo) ? (
+                  <img src={getLogoUrl(club.logo)} alt={club.name} className="w-full h-full object-contain rounded-xl" />
                 ) : (
                   accent.icon
                 )}
