@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { ArrowLeft, Upload, Plus, Trash2, CheckCircle2 } from 'lucide-react';
+import { ArrowLeft, Upload, Plus, Trash2, CheckCircle2, Image as ImageIcon } from 'lucide-react';
 import { api } from '../../services/api';
 import { ClubLead } from '../../types';
 import { LoadingSpinner } from '../../components/ui/LoadingSpinner';
+import { getLogoUrl } from '../../utils/logoHelper';
 
 export const ClubEditorPage: React.FC = () => {
   const { slug } = useParams<{ slug: string }>();
@@ -23,6 +24,7 @@ export const ClubEditorPage: React.FC = () => {
     what_we_do_raw: '',
     domains_raw: '',
     logo: '',
+    banner: '',
     faculty_coordinator: '',
     instagram: '',
     linkedin: '',
@@ -33,6 +35,7 @@ export const ClubEditorPage: React.FC = () => {
 
   const [leads, setLeads] = useState<ClubLead[]>([]);
   const [logoFile, setLogoFile] = useState<File | null>(null);
+  const [bannerFile, setBannerFile] = useState<File | null>(null);
 
   useEffect(() => {
     if (isEdit && slug) {
@@ -53,6 +56,7 @@ export const ClubEditorPage: React.FC = () => {
         what_we_do_raw: (club.what_we_do || []).join('\n'),
         domains_raw: (club.domains || []).join(', '),
         logo: club.logo || '',
+        banner: club.banner || '',
         faculty_coordinator: club.faculty_coordinator || '',
         instagram: club.instagram || '',
         linkedin: club.linkedin || '',
@@ -99,10 +103,15 @@ export const ClubEditorPage: React.FC = () => {
         .filter(Boolean);
 
       let uploadedLogoUrl = formData.logo;
-
       if (logoFile) {
         const logoRes = await api.uploadLogo(formData.slug || 'temp', logoFile);
         uploadedLogoUrl = logoRes.logo_url;
+      }
+
+      let uploadedBannerUrl = formData.banner;
+      if (bannerFile) {
+        const bannerRes = await api.uploadBanner(formData.slug || 'temp', bannerFile);
+        uploadedBannerUrl = bannerRes.banner_url;
       }
 
       const payload = {
@@ -114,6 +123,7 @@ export const ClubEditorPage: React.FC = () => {
         what_we_do,
         domains,
         logo: uploadedLogoUrl || undefined,
+        banner: uploadedBannerUrl || undefined,
         faculty_coordinator: formData.faculty_coordinator || undefined,
         instagram: formData.instagram || undefined,
         linkedin: formData.linkedin || undefined,
@@ -263,33 +273,80 @@ export const ClubEditorPage: React.FC = () => {
             </div>
           </div>
 
-          {/* Logo Upload */}
-          <div className="pt-4 border-t border-[#7226FF]/25">
-            <label className={labelClasses}>Club Emblem / Logo Image</label>
-            <div className="flex items-center gap-4 mt-2">
-              {(logoFile || formData.logo) && (
-                <div className="w-14 h-14 rounded-2xl bg-[#010030] border border-[#7226FF]/40 p-1 flex items-center justify-center overflow-hidden shrink-0">
-                  <img
-                    src={logoFile ? URL.createObjectURL(logoFile) : formData.logo}
-                    alt="Logo Preview"
-                    className="w-full h-full object-contain"
+          {/* Logo & Cover Banner Upload Section */}
+          <div className="pt-4 border-t border-[#7226FF]/25 space-y-4">
+            <h3 className="font-display font-bold text-sm text-[#FFE5F1]">Club Media & Visual Assets</h3>
+
+            {/* Emblem Logo Upload */}
+            <div>
+              <label className={labelClasses}>Club Emblem / Logo Image</label>
+              <div className="flex items-center gap-4 mt-1.5">
+                {(logoFile || formData.logo) && (
+                  <div className="w-14 h-14 rounded-2xl bg-[#010030] border border-[#7226FF]/40 p-1 flex items-center justify-center overflow-hidden shrink-0">
+                    <img
+                      src={logoFile ? URL.createObjectURL(logoFile) : formData.logo}
+                      alt="Logo Preview"
+                      className="w-full h-full object-contain"
+                    />
+                  </div>
+                )}
+                <label className="cursor-pointer inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-[#010030]/80 border border-[#7226FF]/35 text-xs font-mono text-[#FFE5F1] hover:border-[#F042FF] transition">
+                  <Upload className="w-4 h-4 text-[#87F5F5]" />
+                  <span>{logoFile ? logoFile.name : 'Upload Emblem Logo'}</span>
+                  <input
+                    type="file"
+                    accept="image/*"
+                    onChange={(e) => {
+                      if (e.target.files && e.target.files[0]) {
+                        setLogoFile(e.target.files[0]);
+                      }
+                    }}
+                    className="hidden"
                   />
+                </label>
+              </div>
+            </div>
+
+            {/* Cover Banner Image Upload */}
+            <div>
+              <label className={labelClasses}>Header Cover Banner Picture (Replaces Large Gradient Area)</label>
+              <div className="space-y-2 mt-1.5">
+                {(bannerFile || formData.banner) && (
+                  <div className="w-full h-24 rounded-2xl bg-[#010030] border border-[#7226FF]/40 p-1 flex items-center justify-center overflow-hidden shrink-0 relative">
+                    <img
+                      src={bannerFile ? URL.createObjectURL(bannerFile) : getLogoUrl(formData.banner)}
+                      alt="Banner Preview"
+                      className="w-full h-full object-cover rounded-xl"
+                    />
+                    <span className="absolute bottom-2 right-2 font-mono text-[9px] bg-black/60 px-2 py-0.5 rounded text-[#87F5F5]">
+                      Cover Image Preview
+                    </span>
+                  </div>
+                )}
+                <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
+                  <input
+                    type="text"
+                    placeholder="Paste image URL (e.g. https://... or /api/uploads/...)"
+                    value={formData.banner}
+                    onChange={(e) => setFormData({ ...formData, banner: e.target.value })}
+                    className={inputClasses}
+                  />
+                  <label className="cursor-pointer inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-[#010030]/80 border border-[#7226FF]/35 text-xs font-mono text-[#FFE5F1] hover:border-[#F042FF] transition shrink-0 whitespace-nowrap">
+                    <ImageIcon className="w-4 h-4 text-[#F042FF]" />
+                    <span>{bannerFile ? bannerFile.name : 'Upload File'}</span>
+                    <input
+                      type="file"
+                      accept="image/*"
+                      onChange={(e) => {
+                        if (e.target.files && e.target.files[0]) {
+                          setBannerFile(e.target.files[0]);
+                        }
+                      }}
+                      className="hidden"
+                    />
+                  </label>
                 </div>
-              )}
-              <label className="cursor-pointer inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-[#010030]/80 border border-[#7226FF]/35 text-xs font-mono text-[#FFE5F1] hover:border-[#F042FF] transition">
-                <Upload className="w-4 h-4 text-[#87F5F5]" />
-                <span>{logoFile ? logoFile.name : 'Upload New Logo File'}</span>
-                <input
-                  type="file"
-                  accept="image/*"
-                  onChange={(e) => {
-                    if (e.target.files && e.target.files[0]) {
-                      setLogoFile(e.target.files[0]);
-                    }
-                  }}
-                  className="hidden"
-                />
-              </label>
+              </div>
             </div>
           </div>
 
