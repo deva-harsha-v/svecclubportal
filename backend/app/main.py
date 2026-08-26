@@ -80,6 +80,11 @@ async def db_exception_handler(request: Request, exc: SQLAlchemyError):
     )
 
 
+@app.get("/")
+def root():
+    return {"status": "ok", "message": "SVEC Club Portal API is running"}
+
+
 @app.get("/api/health")
 def health(db=Depends(admin.get_db)):
     return admin.admin_health_check(db=db)
@@ -91,4 +96,11 @@ app.include_router(auth_router.router)
 app.include_router(admin.router)
 app.include_router(excel_export.router)
 app.include_router(club_head.router)
+
+
+if __name__ == "__main__":
+    import uvicorn
+    import os
+    port = int(os.getenv("PORT", 8000))
+    uvicorn.run("app.main:app", host="0.0.0.0", port=port)
 
