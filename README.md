@@ -1,5 +1,7 @@
 # College Club Discovery & Registration Portal — B.Tech Orientation 2026
 
+<!-- Release Trigger: 2026-08-26 Production Deployment -->
+
 Production-ready, mobile-first College Club Discovery & Registration Portal built for high-concurrency event-day registration and long-term campus club administration.
 
 ```
