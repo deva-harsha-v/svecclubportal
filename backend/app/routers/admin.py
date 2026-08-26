@@ -24,7 +24,7 @@ from ..schemas import (
     SystemHealthOut,
 )
 from ..auth import require_admin, require_admin_or_club_head, hash_password
-from ..storage import save_club_logo
+from ..storage import save_club_logo, save_club_banner
 
 router = APIRouter(prefix="/api/admin", tags=["admin"])
 
@@ -255,6 +255,26 @@ def admin_upload_logo(
 
     _log_audit(db, staff, "CLUB_LOGO_UPLOADED", f"Uploaded logo for '{club.name}'", request.client.host if request.client else None)
     return {"logo_url": logo_url}
+
+
+@router.post("/clubs/{slug}/banner")
+def admin_upload_banner(
+    slug: str,
+    file: UploadFile = File(...),
+    request: Request = None,
+    staff: StaffProfile = Depends(require_admin),
+    db: Session = Depends(get_db),
+):
+    club = db.query(Club).filter(Club.slug == slug.lower()).first()
+    if not club:
+        raise HTTPException(status_code=404, detail="Club not found.")
+
+    banner_url = save_club_banner(file, slug)
+    club.banner = banner_url
+    db.commit()
+
+    _log_audit(db, staff, "CLUB_BANNER_UPLOADED", f"Uploaded cover banner for '{club.name}'", request.client.host if request.client else None)
+    return {"banner_url": banner_url}
 
 
 # ---------------------------------------------------------------- Students ----

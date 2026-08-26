@@ -37,6 +37,30 @@ def save_club_logo(file: UploadFile, filename_prefix: str) -> str:
             print(f"Supabase storage upload fallback due to: {err}")
 
     # Fallback: Local file system save
+    return f"/api/uploads/{safe_filename}"
+
+
+def save_club_banner(file: UploadFile, filename_prefix: str) -> str:
+    """Uploads a club cover banner image."""
+    ext = Path(file.filename or "").suffix.lower() or ".png"
+    safe_filename = f"{filename_prefix}_banner{ext}"
+
+    if SUPABASE_URL and SUPABASE_KEY:
+        try:
+            import httpx
+            headers = {
+                "Authorization": f"Bearer {SUPABASE_KEY}",
+                "apikey": SUPABASE_KEY,
+            }
+            url = f"{SUPABASE_URL}/storage/v1/object/{SUPABASE_STORAGE_BUCKET}/{safe_filename}"
+            file.file.seek(0)
+            content = file.file.read()
+            resp = httpx.post(url, headers=headers, files={"file": (safe_filename, content, file.content_type)})
+            if resp.status_code in (200, 201):
+                return f"{SUPABASE_URL}/storage/v1/object/public/{SUPABASE_STORAGE_BUCKET}/{safe_filename}"
+        except Exception as err:
+            print(f"Supabase banner upload fallback due to: {err}")
+
     dest_path = UPLOAD_DIR / safe_filename
     file.file.seek(0)
     with dest_path.open("wb") as buffer:

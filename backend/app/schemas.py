@@ -30,6 +30,7 @@ class ClubSummaryOut(BaseModel):
     category: str
     tagline: Optional[str] = None
     logo: Optional[str] = None
+    banner: Optional[str] = None
     registration_open: bool
     is_active: bool = True
 
@@ -45,6 +46,7 @@ class ClubDetailOut(BaseModel):
     what_we_do: list[str] = []
     domains: list[str] = []
     logo: Optional[str] = None
+    banner: Optional[str] = None
     faculty_coordinator: Optional[str] = None
     instagram: Optional[str] = None
     linkedin: Optional[str] = None
@@ -68,6 +70,7 @@ class ClubCreateUpdate(BaseModel):
     what_we_do: list[str] = []
     domains: list[str] = []
     logo: Optional[str] = None
+    banner: Optional[str] = None
     faculty_coordinator: Optional[str] = None
     instagram: Optional[str] = None
     linkedin: Optional[str] = None
