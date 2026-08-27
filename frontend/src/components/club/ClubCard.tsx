@@ -23,8 +23,10 @@ export const ClubCard: React.FC<ClubCardProps> = ({
     navigate(`/clubs/${club.slug}`);
   };
 
-  // Prioritize cover banner photography, fallback to emblem/logo or category tint
-  const imageUrl = getLogoUrl(club.banner || club.logo);
+  // 3:4 Portrait image asset (banner photo or fallback)
+  const portraitImageUrl = getLogoUrl(club.banner || club.logo);
+  // Transparent logo asset
+  const logoUrl = getLogoUrl(club.logo);
 
   return (
     <div
@@ -35,17 +37,17 @@ export const ClubCard: React.FC<ClubCardProps> = ({
           : 'border-slate-800 hover:border-slate-700 hover:shadow-lg'
       }`}
     >
-      {/* 1. LARGE IMAGE-FIRST HEADER (55-60% DOMINANT VISUAL ELEMENT) */}
-      <div className="relative w-full h-48 sm:h-52 bg-slate-950 overflow-hidden shrink-0">
-        {imageUrl ? (
+      {/* 1. 3:4 PORTRAIT CLUB IMAGE AREA */}
+      <div className="relative w-full aspect-[3/4] max-h-56 sm:max-h-60 bg-slate-950 overflow-hidden shrink-0">
+        {portraitImageUrl ? (
           <img
-            src={imageUrl}
+            src={portraitImageUrl}
             alt={club.name}
             className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300 ease-out"
           />
         ) : (
           <div className={`w-full h-full bg-gradient-to-br ${accent.gradientBg} flex items-center justify-center p-6 opacity-60`}>
-            <div className="w-14 h-14 rounded-xl border border-slate-700/50 bg-slate-900/60 flex items-center justify-center text-slate-300">
+            <div className="w-14 h-14 text-slate-300">
               {accent.icon}
             </div>
           </div>
@@ -54,7 +56,18 @@ export const ClubCard: React.FC<ClubCardProps> = ({
         {/* Subtle scrim overlay at bottom for contrast */}
         <div className="absolute inset-0 bg-gradient-to-t from-slate-900 via-transparent to-transparent opacity-60 pointer-events-none" />
 
-        {/* 2. SUBTLE CIRCULAR FAVORITE / SELECT BUTTON (TOP RIGHT) */}
+        {/* TRANSPARENT CLUB LOGO (Clean floating logo with NO container box, borders, or background) */}
+        {logoUrl && (
+          <div className="absolute bottom-3 left-3 z-10">
+            <img
+              src={logoUrl}
+              alt={`${club.name} Logo`}
+              className="w-8 h-8 sm:w-9 sm:h-9 object-contain drop-shadow-md shrink-0"
+            />
+          </div>
+        )}
+
+        {/* SUBTLE CIRCULAR FAVORITE / SELECT BUTTON (TOP RIGHT) */}
         <button
           onClick={(e) => {
             e.stopPropagation();
@@ -76,13 +89,13 @@ export const ClubCard: React.FC<ClubCardProps> = ({
 
         {/* Selected badge overlay on top left if active */}
         {isSelected && (
-          <div className="absolute top-3 left-3 z-10 px-2.5 py-0.5 rounded-md bg-indigo-600 text-white text-[10px] font-semibold shadow-sm">
+          <div className="absolute top-3 left-3 z-10 px-2 py-0.5 rounded-md bg-indigo-600 text-white text-[10px] font-semibold shadow-sm">
             Selected
           </div>
         )}
       </div>
 
-      {/* 3. INFORMATION SECTION (SOLID DARK SLATE SURFACE) */}
+      {/* 2. INFORMATION SECTION (SOLID DARK SLATE SURFACE) */}
       <div className="p-4 sm:p-5 flex flex-col justify-between flex-1">
         <div>
           {/* Club Name */}
@@ -99,13 +112,13 @@ export const ClubCard: React.FC<ClubCardProps> = ({
 
           {/* Short Description / Tagline */}
           {club.tagline && (
-            <p className="mt-2.5 text-xs text-slate-400 line-clamp-2 leading-relaxed">
+            <p className="mt-2 text-xs text-slate-400 line-clamp-2 leading-relaxed">
               {club.tagline}
             </p>
           )}
         </div>
 
-        {/* 4. ACTION AREA & AVAILABILITY STATUS */}
+        {/* 3. ACTION AREA & AVAILABILITY STATUS */}
         <div className="mt-4 pt-3 border-t border-slate-800/80 flex items-center justify-between">
           <div className="flex items-center gap-1.5">
             <span className={`w-2 h-2 rounded-full ${club.registration_open ? 'bg-emerald-400' : 'bg-slate-600'}`} />
