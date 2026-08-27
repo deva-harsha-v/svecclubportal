@@ -52,7 +52,7 @@ export const HomePage: React.FC = () => {
             playsInline
             preload="metadata"
             onError={() => setVideoError(true)}
-            className="hidden lg:block absolute inset-0 w-full h-full object-cover z-0 opacity-40 pointer-events-none transition-opacity duration-1000"
+            className="hidden lg:block absolute inset-0 w-full h-full object-cover z-0 opacity-50 pointer-events-none transition-opacity duration-1000"
           >
             <source src={HERO_VIDEO_PATH} type="video/mp4" />
           </video>
@@ -62,7 +62,7 @@ export const HomePage: React.FC = () => {
         <div
           className="hidden lg:block absolute inset-0 z-0 pointer-events-none"
           style={{
-            background: 'linear-gradient(90deg, rgba(9, 13, 22, 0.95) 0%, rgba(15, 23, 42, 0.75) 50%, rgba(9, 13, 22, 0.90) 100%)',
+            background: 'linear-gradient(90deg, rgba(9, 13, 22, 0.85) 0%, rgba(15, 23, 42, 0.55) 50%, rgba(9, 13, 22, 0.80) 100%)',
           }}
         />
 
@@ -82,12 +82,12 @@ export const HomePage: React.FC = () => {
                   playsInline
                   preload="metadata"
                   onError={() => setVideoError(true)}
-                  className="absolute inset-0 w-full h-full object-cover z-0 opacity-30 pointer-events-none"
+                  className="absolute inset-0 w-full h-full object-cover z-0 opacity-45 pointer-events-none"
                 >
                   <source src={HERO_VIDEO_PATH} type="video/mp4" />
                 </video>
               )}
-              <div className="absolute inset-0 bg-gradient-to-r from-slate-950/90 via-slate-900/80 to-slate-950/90 z-0 pointer-events-none" />
+              <div className="absolute inset-0 bg-gradient-to-r from-slate-950/85 via-slate-900/65 to-slate-950/80 z-0 pointer-events-none" />
 
               <div className="relative z-10 space-y-3">
                 <div className="flex items-center gap-2">

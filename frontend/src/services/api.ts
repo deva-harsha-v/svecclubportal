@@ -42,19 +42,38 @@ async function request<T>(endpoint: string, options: RequestInit = {}): Promise<
   return response.json();
 }
 
+let clubsCache: { key: string; data: ClubSummary[]; timestamp: number } | null = null;
+const clubDetailCache: Record<string, { data: ClubDetail; timestamp: number }> = {};
+const CACHE_TTL_MS = 60000; // 60s cache TTL for public directory
+
 export const api = {
-  // Public
-  getClubs: (search?: string, category?: string) => {
+  // Public with high-performance in-memory cache
+  getClubs: async (search?: string, category?: string) => {
     const params = new URLSearchParams();
     if (search) params.set('search', search);
     if (category && category !== 'All') params.set('category', category);
     const query = params.toString() ? `?${params.toString()}` : '';
-    return request<ClubSummary[]>(`/api/clubs${query}`);
+    
+    if (clubsCache && clubsCache.key === query && Date.now() - clubsCache.timestamp < CACHE_TTL_MS) {
+      return clubsCache.data;
+    }
+
+    const data = await request<ClubSummary[]>(`/api/clubs${query}`);
+    clubsCache = { key: query, data, timestamp: Date.now() };
+    return data;
   },
 
   getCategories: () => request<string[]>('/api/clubs/categories'),
 
-  getClubBySlug: (slug: string) => request<ClubDetail>(`/api/clubs/${slug}`),
+  getClubBySlug: async (slug: string) => {
+    const cached = clubDetailCache[slug];
+    if (cached && Date.now() - cached.timestamp < CACHE_TTL_MS) {
+      return cached.data;
+    }
+    const data = await request<ClubDetail>(`/api/clubs/${slug}`);
+    clubDetailCache[slug] = { data, timestamp: Date.now() };
+    return data;
+  },
 
   submitRegistration: (payload: { student: StudentIn; clubs: string[] }) =>
     request<RegistrationResponse>('/api/registrations', {

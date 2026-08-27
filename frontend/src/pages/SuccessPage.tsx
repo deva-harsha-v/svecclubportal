@@ -12,21 +12,19 @@ export const SuccessPage: React.FC = () => {
 
   if (!response) {
     return (
-      <div className="portal-bg min-h-screen py-16 px-4">
-        <div className="max-w-md mx-auto text-center">
-          <div className="glass-card p-8 rounded-3xl">
-            <h2 className="font-display font-bold text-xl text-slate-100">Registration Completed</h2>
-            <p className="text-xs text-subtext mt-2">
-              Your club selection has been processed.
-            </p>
-            <Link
-              to="/"
-              className="mt-6 inline-flex items-center gap-2 px-6 py-2.5 rounded-full bg-primary text-white text-xs font-semibold hover:bg-primary/90 transition shadow-glow"
-            >
-              <Home className="w-4 h-4" />
-              Back to Home
-            </Link>
-          </div>
+      <div className="portal-bg min-h-screen py-16 px-4 flex items-center justify-center">
+        <div className="max-w-md w-full text-center space-y-4 bg-slate-900 border border-slate-800 p-8 rounded-2xl">
+          <h2 className="font-display font-bold text-xl text-slate-100">Registration Completed</h2>
+          <p className="text-xs text-slate-400">
+            Your club registration entries have been recorded.
+          </p>
+          <Link
+            to="/"
+            className="inline-flex items-center gap-2 px-5 py-2.5 rounded-lg bg-indigo-600 text-white text-xs font-semibold hover:bg-indigo-500 transition shadow-sm"
+          >
+            <Home className="w-4 h-4" />
+            Back to Directory
+          </Link>
         </div>
       </div>
     );
@@ -36,41 +34,42 @@ export const SuccessPage: React.FC = () => {
 
   return (
     <div className="portal-bg min-h-screen py-8">
-      <div className="max-w-2xl mx-auto px-4">
-        {/* Step 3 Progress Bar */}
+      <div className="max-w-xl mx-auto px-4">
         <RegistrationProgress currentStep={3} />
 
-        <div className="glass-panel rounded-3xl p-6 sm:p-10 shadow-2xl text-center">
+        <div className="bg-slate-900 rounded-2xl p-6 sm:p-8 border border-slate-800 shadow-xl text-center space-y-6">
           {/* Celebration Badge */}
-          <div className="w-16 h-16 rounded-full bg-cyanAcc/15 text-cyanAcc border border-cyanAcc/30 flex items-center justify-center mx-auto mb-4 shadow-cyanGlow">
-            <CheckCircle2 className="w-8 h-8 text-cyanAcc" />
+          <div className="w-14 h-14 rounded-full bg-emerald-950/60 border border-emerald-800/50 text-emerald-400 flex items-center justify-center mx-auto">
+            <CheckCircle2 className="w-7 h-7 text-emerald-400" />
           </div>
 
-          <div className="inline-flex items-center gap-1.5 px-3.5 py-1 rounded-full bg-gold/15 text-gold text-xs font-mono font-semibold uppercase tracking-wider mb-2 border border-gold/30">
-            <Sparkles className="w-3.5 h-3.5 text-gold" />
-            Registration Confirmed
-          </div>
+          <div>
+            <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-md bg-indigo-950/40 text-indigo-400 text-xs font-semibold uppercase tracking-wider mb-2 border border-indigo-800/40">
+              <Sparkles className="w-3.5 h-3.5 text-indigo-400" />
+              Registration Confirmed
+            </div>
 
-          <h1 className="font-display font-bold text-2xl sm:text-3xl text-slate-100">
-            Welcome aboard, {student_name}!
-          </h1>
-          <p className="text-xs sm:text-sm text-subtext mt-1 max-w-md mx-auto">
-            Your registrations have been centrally stored in the SVEC Student Club Portal database.
-          </p>
+            <h1 className="font-display font-bold text-2xl sm:text-3xl text-slate-100">
+              Welcome aboard, {student_name}!
+            </h1>
+            <p className="text-xs sm:text-sm text-slate-300 mt-1 max-w-md mx-auto">
+              Your registrations have been centrally saved in the SVEC Club Portal database.
+            </p>
+          </div>
 
           {/* Results breakdown */}
-          <div className="mt-8 text-left space-y-4">
+          <div className="text-left space-y-3">
             {/* Newly Registered */}
             {newly_registered.length > 0 && (
-              <div className="p-4 rounded-2xl bg-cyanAcc/10 border border-cyanAcc/25">
-                <div className="font-mono text-xs font-semibold text-cyanAcc uppercase tracking-wider mb-2">
+              <div className="p-4 rounded-xl bg-slate-950 border border-slate-800">
+                <div className="text-xs font-semibold text-emerald-400 uppercase tracking-wider mb-2">
                   Successfully Joined ({newly_registered.length})
                 </div>
                 <div className="space-y-1.5">
                   {newly_registered.map((item) => (
                     <div key={item.slug} className="flex items-center justify-between text-xs text-slate-100 font-semibold">
                       <span>{item.name}</span>
-                      <span className="text-cyanAcc font-mono">Confirmed</span>
+                      <span className="text-emerald-400">Confirmed</span>
                     </div>
                   ))}
                 </div>
@@ -79,15 +78,15 @@ export const SuccessPage: React.FC = () => {
 
             {/* Already Registered */}
             {already_registered.length > 0 && (
-              <div className="p-4 rounded-2xl bg-amber-500/10 border border-amber-500/25">
-                <div className="font-mono text-xs font-semibold text-amber-400 uppercase tracking-wider mb-2">
+              <div className="p-4 rounded-xl bg-slate-950 border border-slate-800">
+                <div className="text-xs font-semibold text-amber-400 uppercase tracking-wider mb-2">
                   Previously Registered ({already_registered.length})
                 </div>
                 <div className="space-y-1.5">
                   {already_registered.map((item) => (
                     <div key={item.slug} className="flex items-center justify-between text-xs text-slate-300">
                       <span>{item.name}</span>
-                      <span className="text-amber-400 font-mono text-[11px]">Already on record</span>
+                      <span className="text-amber-400">Already on record</span>
                     </div>
                   ))}
                 </div>
@@ -96,15 +95,15 @@ export const SuccessPage: React.FC = () => {
 
             {/* Closed */}
             {closed.length > 0 && (
-              <div className="p-4 rounded-2xl bg-red-500/10 border border-red-500/25">
-                <div className="font-mono text-xs font-semibold text-red-400 uppercase tracking-wider mb-2">
+              <div className="p-4 rounded-xl bg-slate-950 border border-slate-800">
+                <div className="text-xs font-semibold text-red-400 uppercase tracking-wider mb-2">
                   Registration Closed ({closed.length})
                 </div>
                 <div className="space-y-1.5">
                   {closed.map((item) => (
                     <div key={item.slug} className="flex items-center justify-between text-xs text-slate-300">
                       <span>{item.name}</span>
-                      <span className="text-red-400 font-mono text-[11px]">Closed</span>
+                      <span className="text-red-400">Closed</span>
                     </div>
                   ))}
                 </div>
@@ -113,13 +112,13 @@ export const SuccessPage: React.FC = () => {
           </div>
 
           {/* Return Button */}
-          <div className="mt-8 pt-6 border-t border-white/10 flex flex-col sm:flex-row items-center justify-center gap-3">
+          <div className="pt-4 border-t border-slate-800 flex justify-center">
             <button
               onClick={() => navigate('/')}
-              className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-8 py-3 rounded-full bg-gradient-to-r from-primary to-purpleAcc text-white font-bold text-xs hover:brightness-110 transition shadow-glow"
+              className="inline-flex items-center gap-2 px-6 py-2.5 rounded-xl bg-indigo-600 text-white font-semibold text-xs hover:bg-indigo-500 transition shadow-sm"
             >
               <Home className="w-4 h-4" />
-              Explore More SVEC Clubs
+              Explore Directory Home
             </button>
           </div>
         </div>

@@ -115,22 +115,23 @@ export const FloatingShowcase: React.FC<FloatingShowcaseProps> = ({ clubs = [] }
         </div>
       </div>
 
-      {/* Featured Editorial Card (Clean 3072x1560 Photo + Solid Surface) */}
+      {/* Featured Editorial Card */}
       <div
         onClick={() => handleCardClick(currentItem.slug)}
         className="group relative rounded-2xl bg-slate-900 border border-slate-800 cursor-pointer overflow-hidden transition-all duration-200 hover:border-slate-700 shadow-lg"
       >
-        {/* Large Prominent Hero Image (3072x1560 Standardized Framing) */}
+        {/* Large Prominent Hero Image */}
         <div className="relative w-full h-44 sm:h-52 aspect-[3072/1560] bg-slate-950 overflow-hidden">
           {bannerUrl ? (
             <img
               src={bannerUrl}
               alt={currentItem.fullName}
               className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500 ease-out"
+              loading="eager"
             />
           ) : (
             <div className={`w-full h-full bg-gradient-to-br ${accent.gradientBg} flex items-center justify-center opacity-70`}>
-              <div className="w-16 h-16 rounded-xl border border-slate-700/50 bg-slate-900/60 flex items-center justify-center text-slate-200">
+              <div className="w-16 h-16 text-slate-200">
                 {accent.icon}
               </div>
             </div>
@@ -148,17 +149,19 @@ export const FloatingShowcase: React.FC<FloatingShowcaseProps> = ({ clubs = [] }
             </span>
           </div>
 
-          {/* Emblem Box (3:4 Portrait Ratio) */}
+          {/* Raw Logo rendering directly without container boxes, borders or backgrounds */}
           <div className="absolute bottom-3 left-3 z-10 flex items-center gap-2.5">
-            <div className={`w-8 aspect-[3/4] rounded-lg border border-slate-700/80 p-0.5 bg-slate-950 flex items-center justify-center shrink-0 overflow-hidden shadow-md ${accent.bgTint}`}>
-              {logoUrl ? (
-                <img src={logoUrl} alt={currentItem.name} className="w-full h-full object-cover rounded-md" />
-              ) : (
-                accent.icon
-              )}
-            </div>
+            {logoUrl ? (
+              <img
+                src={logoUrl}
+                alt={currentItem.name}
+                className="w-9 h-9 object-contain shrink-0"
+              />
+            ) : (
+              <div className="w-8 h-8 text-indigo-400 shrink-0">{accent.icon}</div>
+            )}
             <div>
-              <span className="text-[10px] font-bold text-indigo-400 uppercase tracking-wider block">
+              <span className="text-[10px] font-bold text-indigo-400 uppercase block truncate tracking-wider">
                 SVEC Organisation
               </span>
               <span className="font-display font-bold text-xs text-slate-100 block truncate">
