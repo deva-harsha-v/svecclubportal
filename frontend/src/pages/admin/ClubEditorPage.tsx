@@ -436,6 +436,57 @@ export const ClubEditorPage: React.FC = () => {
             </div>
           </div>
 
+          {/* Faculty Coordinator & Socials */}
+          <div className="pt-4 border-t border-slate-800 space-y-4">
+            <h3 className="font-display font-bold text-sm text-slate-100">Coordinator & External Links</h3>
+            
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div>
+                <label className={labelClasses}>Faculty Coordinator Name</label>
+                <input
+                  type="text"
+                  placeholder="e.g. Dr. Vyasa Krishnaji Kadambari C S"
+                  value={formData.faculty_coordinator}
+                  onChange={(e) => setFormData({ ...formData, faculty_coordinator: e.target.value })}
+                  className={inputClasses}
+                />
+              </div>
+
+              <div>
+                <label className={labelClasses}>Instagram URL</label>
+                <input
+                  type="url"
+                  placeholder="https://instagram.com/..."
+                  value={formData.instagram}
+                  onChange={(e) => setFormData({ ...formData, instagram: e.target.value })}
+                  className={inputClasses}
+                />
+              </div>
+
+              <div>
+                <label className={labelClasses}>LinkedIn URL</label>
+                <input
+                  type="url"
+                  placeholder="https://linkedin.com/in/..."
+                  value={formData.linkedin}
+                  onChange={(e) => setFormData({ ...formData, linkedin: e.target.value })}
+                  className={inputClasses}
+                />
+              </div>
+
+              <div>
+                <label className={labelClasses}>Website / External URL</label>
+                <input
+                  type="url"
+                  placeholder="https://srivasaviengg.ac.in"
+                  value={formData.website}
+                  onChange={(e) => setFormData({ ...formData, website: e.target.value })}
+                  className={inputClasses}
+                />
+              </div>
+            </div>
+          </div>
+
           {/* Student Leads */}
           <div className="pt-4 border-t border-slate-800 space-y-4">
             <div className="flex items-center justify-between">

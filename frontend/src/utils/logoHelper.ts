@@ -10,7 +10,7 @@ export const getLogoUrl = (logo?: string | null): string => {
   return `${apiBase}/api/uploads/${logo}`;
 };
 
-export const compressImage = (file: File, maxWidth = 1200, maxHeight = 600, quality = 0.85): Promise<string> => {
+export const compressImage = (file: File, maxWidth = 1200, maxHeight = 600, quality = 0.92): Promise<string> => {
   return new Promise((resolve, reject) => {
     const reader = new FileReader();
     reader.readAsDataURL(file);
@@ -34,8 +34,17 @@ export const compressImage = (file: File, maxWidth = 1200, maxHeight = 600, qual
         canvas.width = width;
         canvas.height = height;
         const ctx = canvas.getContext('2d');
-        ctx?.drawImage(img, 0, 0, width, height);
-        resolve(canvas.toDataURL('image/jpeg', quality));
+        if (ctx) {
+          // Clear canvas with transparent pixels (Do NOT fill with solid black or white!)
+          ctx.clearRect(0, 0, width, height);
+          ctx.drawImage(img, 0, 0, width, height);
+        }
+
+        // Preserve alpha transparency for PNGs or WebP
+        const isPng = file.type === 'image/png' || file.name?.toLowerCase().endsWith('.png');
+        const mimeType = isPng ? 'image/png' : 'image/webp';
+        
+        resolve(canvas.toDataURL(mimeType, quality));
       };
       img.onerror = () => resolve(event.target?.result as string);
     };

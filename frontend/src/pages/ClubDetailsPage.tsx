@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { ArrowLeft, Check, Heart, Trash2 } from 'lucide-react';
+import { ArrowLeft, Check, Heart, Trash2, UserCheck, Instagram, Linkedin, Globe, Sparkles } from 'lucide-react';
 import { api } from '../services/api';
 import { ClubDetail } from '../types';
 import { LoadingSpinner } from '../components/ui/LoadingSpinner';
@@ -59,7 +59,7 @@ export const ClubDetailsPage: React.FC = () => {
   const accent = getClubAccent(club.category, club.name);
   const selected = isSelected(club.slug);
 
-  // 1. Dedicated 3:4 Portrait image asset for Club Detail page (detail_image, fallback to banner)
+  // 1. Dedicated 3:4 Portrait image asset for Club Detail page
   const portraitImage = getLogoUrl(club.detail_image || club.banner || club.logo);
 
   // 2. Transparent PNG logo asset
@@ -77,11 +77,11 @@ export const ClubDetailsPage: React.FC = () => {
           Back to Directory
         </button>
 
-        {/* Editorial Product Card Container */}
-        <div className="bg-slate-900 rounded-2xl border border-slate-800 shadow-xl overflow-hidden">
+        {/* Main Club Container */}
+        <div className="bg-slate-900 rounded-2xl border border-slate-800 shadow-xl overflow-hidden space-y-0">
           
           {/* 1. FULL-BLEED 3:4 PORTRAIT IMAGE AREA (Strict 3:4 Aspect Ratio) */}
-          <div className="relative w-full aspect-[3/4] max-h-[500px] sm:max-h-[560px] bg-slate-950 overflow-hidden">
+          <div className="relative w-full aspect-[3/4] max-h-[480px] sm:max-h-[540px] bg-slate-950 overflow-hidden">
             {portraitImage ? (
               <img
                 src={portraitImage}
@@ -97,15 +97,15 @@ export const ClubDetailsPage: React.FC = () => {
             )}
 
             {/* Gradient Scrim for contrast */}
-            <div className="absolute inset-0 bg-gradient-to-t from-slate-950/80 via-transparent to-transparent opacity-80 pointer-events-none" />
+            <div className="absolute inset-0 bg-gradient-to-t from-slate-950/85 via-transparent to-transparent opacity-80 pointer-events-none" />
 
-            {/* CLEAN FLOATING TRANSPARENT LOGO OVERLAY (Raw PNG Logo ONLY — NO container box, NO inner square, NO border) */}
+            {/* CLEAN STANDALONE CIRCULAR LOGO EMBLEM (NO framed square box, NO black container, NO borders) */}
             {logoUrl && (
               <div className="absolute bottom-4 left-4 z-10 flex items-center gap-3">
                 <img
                   src={logoUrl}
-                  alt={`${club.name} Logo`}
-                  className="w-12 h-12 sm:w-14 sm:h-14 object-contain drop-shadow-xl shrink-0"
+                  alt={`${club.name} Circular Logo`}
+                  className="w-12 h-12 sm:w-14 sm:h-14 object-contain drop-shadow-xl shrink-0 pointer-events-none"
                 />
                 <div>
                   <span className="text-[11px] font-bold text-indigo-400 uppercase tracking-wider block">
@@ -160,10 +160,114 @@ export const ClubDetailsPage: React.FC = () => {
               )}
             </div>
 
+            {/* Full Description / About Section */}
+            {club.description && (
+              <div className="pt-4 border-t border-slate-800/80 space-y-2">
+                <h3 className="font-display font-bold text-sm text-slate-100 uppercase tracking-wider text-indigo-400">
+                  About the Organisation
+                </h3>
+                <p className="text-xs sm:text-sm text-slate-300 leading-relaxed whitespace-pre-line">
+                  {club.description}
+                </p>
+              </div>
+            )}
+
+            {/* What We Do Activities */}
+            {club.what_we_do && club.what_we_do.length > 0 && (
+              <div className="pt-4 border-t border-slate-800/80 space-y-2.5">
+                <h3 className="font-display font-bold text-sm text-slate-100 uppercase tracking-wider text-indigo-400">
+                  Core Activities & Initiatives
+                </h3>
+                <ul className="space-y-1.5 text-xs sm:text-sm text-slate-300">
+                  {club.what_we_do.map((act, i) => (
+                    <li key={i} className="flex items-start gap-2">
+                      <Sparkles className="w-4 h-4 text-indigo-400 shrink-0 mt-0.5" />
+                      <span>{act}</span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            )}
+
+            {/* RESTORED FACULTY COORDINATOR SECTION */}
+            {club.faculty_coordinator && (
+              <div className="pt-4 border-t border-slate-800/80">
+                <div className="p-4 rounded-xl bg-slate-950 border border-slate-800 flex items-center gap-3">
+                  <div className="w-10 h-10 rounded-full bg-indigo-950 border border-indigo-800/50 text-indigo-400 flex items-center justify-center shrink-0">
+                    <UserCheck className="w-5 h-5" />
+                  </div>
+                  <div>
+                    <span className="text-[11px] font-semibold uppercase tracking-wider text-slate-400 block">
+                      Faculty Coordinator
+                    </span>
+                    <span className="font-display font-bold text-sm text-slate-100">
+                      {club.faculty_coordinator}
+                    </span>
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {/* Student Leads / Office Bearers */}
+            {club.leads && club.leads.length > 0 && (
+              <div className="pt-4 border-t border-slate-800/80 space-y-3">
+                <h3 className="font-display font-bold text-sm text-slate-100 uppercase tracking-wider text-indigo-400">
+                  Student Office Bearers
+                </h3>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+                  {club.leads.map((lead, i) => (
+                    <div key={i} className="p-3 rounded-xl bg-slate-950 border border-slate-800 flex items-center justify-between">
+                      <span className="text-xs font-semibold text-slate-200">{lead.name}</span>
+                      {lead.role && <span className="text-[11px] text-indigo-400 font-medium">{lead.role}</span>}
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* External Social Links */}
+            {(club.instagram || club.linkedin || club.website) && (
+              <div className="pt-4 border-t border-slate-800/80 flex items-center gap-3">
+                {club.instagram && (
+                  <a
+                    href={club.instagram}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="p-2 rounded-lg bg-slate-950 border border-slate-800 text-slate-300 hover:text-white hover:border-indigo-500 transition"
+                    title="Instagram"
+                  >
+                    <Instagram className="w-4 h-4" />
+                  </a>
+                )}
+                {club.linkedin && (
+                  <a
+                    href={club.linkedin}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="p-2 rounded-lg bg-slate-950 border border-slate-800 text-slate-300 hover:text-white hover:border-indigo-500 transition"
+                    title="LinkedIn"
+                  >
+                    <Linkedin className="w-4 h-4" />
+                  </a>
+                )}
+                {club.website && (
+                  <a
+                    href={club.website}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="p-2 rounded-lg bg-slate-950 border border-slate-800 text-slate-300 hover:text-white hover:border-indigo-500 transition"
+                    title="Website"
+                  >
+                    <Globe className="w-4 h-4" />
+                  </a>
+                )}
+              </div>
+            )}
+
             {/* Action Row: Primary Join / Select CTA Button */}
-            <div className="pt-4 border-t border-slate-800/80 flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-4">
+            <div className="pt-5 border-t border-slate-800 flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-4">
               <div className="flex flex-col gap-1">
-                <span className="text-xs font-semibold text-slate-400">Status</span>
+                <span className="text-xs font-semibold text-slate-400">Registration Status</span>
                 <span className="text-sm font-medium text-slate-200">
                   {club.registration_open ? 'Available for Orientation 2026' : 'Registration Currently Closed'}
                 </span>
