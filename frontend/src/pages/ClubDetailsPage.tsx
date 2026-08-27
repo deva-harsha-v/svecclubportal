@@ -105,11 +105,11 @@ export const ClubDetailsPage: React.FC = () => {
               </button>
             </div>
 
-            {/* Bottom Row inside Media: Logo & SVEC Brand */}
+            {/* Bottom Row inside Media: Logo & SVEC Brand (3:4 Instagram Portrait Ratio Box) */}
             <div className="flex items-center gap-4 z-10">
-              <div className={`w-16 h-16 rounded-xl border p-1 flex items-center justify-center overflow-hidden shrink-0 ${accent.bgTint}`}>
+              <div className={`w-24 sm:w-28 aspect-[3/4] rounded-xl border p-1 flex items-center justify-center overflow-hidden shrink-0 shadow-lg ${accent.bgTint}`}>
                 {getLogoUrl(club.logo) ? (
-                  <img src={getLogoUrl(club.logo)} alt={club.name} className="w-full h-full object-contain rounded-lg" />
+                  <img src={getLogoUrl(club.logo)} alt={club.name} className="w-full h-full object-cover rounded-lg" />
                 ) : (
                   accent.icon
                 )}

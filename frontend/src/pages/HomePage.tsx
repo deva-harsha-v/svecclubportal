@@ -2,7 +2,6 @@ import React, { useState, useEffect } from 'react';
 import { api } from '../services/api';
 import { ClubSummary } from '../types';
 import { ClubCard } from '../components/club/ClubCard';
-import { CategoryFilter } from '../components/club/CategoryFilter';
 import { SelectionTray } from '../components/club/SelectionTray';
 import { useClubSelection } from '../hooks/useClubSelection';
 import { FloatingShowcase } from '../components/club/FloatingShowcase';
@@ -12,8 +11,6 @@ export const HERO_VIDEO_PATH = '/assets/hero-campus.mp4';
 
 export const HomePage: React.FC = () => {
   const [clubs, setClubs] = useState<ClubSummary[]>([]);
-  const [categories, setCategories] = useState<string[]>([]);
-  const [activeCategory, setActiveCategory] = useState<string>('All');
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
   const [videoError, setVideoError] = useState<boolean>(false);
@@ -21,32 +18,14 @@ export const HomePage: React.FC = () => {
   const { selectedClubs, toggleClub, isSelected, removeClub, clearSelection } = useClubSelection();
 
   useEffect(() => {
-    fetchCategories();
-  }, []);
-
-  useEffect(() => {
     fetchClubs();
-  }, [activeCategory]);
-
-  const fetchCategories = async () => {
-    try {
-      const data = await api.getCategories();
-      setCategories(data);
-    } catch (err) {
-      console.error('Failed to load categories:', err);
-    }
-  };
+  }, []);
 
   const fetchClubs = async () => {
     setLoading(true);
     setError(null);
     try {
-      let queryCategory = activeCategory;
-      if (activeCategory === 'Dance & Drama' || activeCategory === 'Performing Arts') queryCategory = 'Cultural';
-      if (activeCategory === 'Media & Creative' || activeCategory === 'Media') queryCategory = 'Media';
-      if (activeCategory === 'Music & Performing Arts') queryCategory = 'Cultural';
-
-      const data = await api.getClubs('', activeCategory === 'All' ? 'All' : queryCategory);
+      const data = await api.getClubs('', 'All');
       setClubs(data);
     } catch (err: any) {
       setError(err.message || 'Failed to load clubs.');
@@ -58,26 +37,6 @@ export const HomePage: React.FC = () => {
   if (loading) {
     return <PublicPortalSkeleton />;
   }
-
-  const categoryCounts: Record<string, number> = { All: clubs.length };
-  clubs.forEach((c) => {
-    const cat = c.category;
-    categoryCounts[cat] = (categoryCounts[cat] || 0) + 1;
-
-    const nameLower = c.name.toLowerCase();
-    if (nameLower.includes('sakala') || nameLower.includes('dance')) {
-      categoryCounts['Performing Arts'] = (categoryCounts['Performing Arts'] || 0) + 1;
-    }
-    if (nameLower.includes('beats') || nameLower.includes('sing')) {
-      categoryCounts['Music'] = (categoryCounts['Music'] || 0) + 1;
-    }
-    if (nameLower.includes('photo')) {
-      categoryCounts['Photography'] = (categoryCounts['Photography'] || 0) + 1;
-    }
-    if (nameLower.includes('ace') || nameLower.includes('radio') || nameLower.includes('media')) {
-      categoryCounts['Media'] = (categoryCounts['Media'] || 0) + 1;
-    }
-  });
 
   return (
     <div className="portal-bg min-h-screen">
@@ -189,14 +148,6 @@ export const HomePage: React.FC = () => {
         </div>
       </section>
 
-      {/* Category Filter Bar */}
-      <CategoryFilter
-        categories={categories}
-        activeCategory={activeCategory}
-        categoryCounts={categoryCounts}
-        onSelectCategory={setActiveCategory}
-      />
-
       {/* Main Clubs Grid Section */}
       <section className="max-w-[1600px] mx-auto px-4 sm:px-8 lg:px-12 py-8 sm:py-12">
         <div className="flex items-center justify-between mb-6 pb-3 border-b border-slate-800/80">
@@ -221,8 +172,7 @@ export const HomePage: React.FC = () => {
 
         {clubs.length === 0 ? (
           <div className="text-center py-16 bg-slate-900/50 border border-slate-800 rounded-2xl">
-            <p className="text-slate-300 font-medium">No clubs found in this category.</p>
-            <p className="text-xs text-slate-400 mt-1">Try selecting a different filter above.</p>
+            <p className="text-slate-300 font-medium">No clubs found.</p>
           </div>
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-5">

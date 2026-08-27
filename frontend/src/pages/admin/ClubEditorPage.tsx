@@ -158,31 +158,31 @@ export const ClubEditorPage: React.FC = () => {
   if (loading) return <LoadingSpinner label="Loading club editor..." />;
 
   const inputClasses =
-    'w-full px-4 py-2.5 rounded-xl bg-[#010030]/80 border border-[#7226FF]/35 text-[#FFE5F1] text-sm focus:outline-none focus:border-[#F042FF] focus:ring-1 focus:ring-[#F042FF] transition placeholder:text-[rgba(255,229,241,0.35)] disabled:opacity-50 disabled:bg-[#010030]/40 font-sans';
-  const labelClasses = 'block text-xs font-mono font-semibold text-[#87F5F5] mb-1.5';
+    'w-full px-4 py-2.5 rounded-xl bg-slate-900 border border-slate-800 text-slate-100 text-sm focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 transition placeholder:text-slate-500 disabled:opacity-50 disabled:bg-slate-900/40 font-sans';
+  const labelClasses = 'block text-xs font-semibold text-indigo-400 mb-1.5';
 
   return (
     <div className="max-w-3xl mx-auto space-y-6">
       <button
         onClick={() => navigate('/admin/clubs')}
-        className="inline-flex items-center gap-2 text-xs font-mono text-[rgba(255,229,241,0.68)] hover:text-[#FFE5F1] transition"
+        className="inline-flex items-center gap-2 text-xs font-medium text-slate-400 hover:text-slate-100 transition"
       >
         <ArrowLeft className="w-4 h-4" />
         Back to Clubs List
       </button>
 
-      <div className="glass-panel rounded-3xl p-6 sm:p-8 border border-[#7226FF]/35 shadow-2xl bg-[#160078]/70 text-[#FFE5F1]">
-        <div className="border-b border-[#7226FF]/25 pb-6 mb-6">
-          <h1 className="font-display font-bold text-2xl text-[#FFE5F1]">
+      <div className="bg-slate-900 rounded-2xl p-6 sm:p-8 border border-slate-800 shadow-2xl text-slate-100">
+        <div className="border-b border-slate-800 pb-6 mb-6">
+          <h1 className="font-display font-bold text-2xl text-slate-100">
             {isEdit ? `Edit Club: ${formData.name}` : 'Create New Club'}
           </h1>
-          <p className="text-xs text-[rgba(255,229,241,0.68)] font-mono mt-1">
+          <p className="text-xs text-slate-400 mt-1">
             Modifications will be immediately reflected in the live Student Discovery Portal.
           </p>
         </div>
 
         {error && (
-          <div className="p-4 mb-6 rounded-2xl bg-red-500/10 border border-red-500/30 text-red-400 text-xs">
+          <div className="p-4 mb-6 rounded-xl bg-red-950/40 border border-red-800/60 text-red-300 text-xs">
             {error}
           </div>
         )}
@@ -191,7 +191,7 @@ export const ClubEditorPage: React.FC = () => {
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
               <label className={labelClasses}>
-                Club Name <span className="text-[#F042FF]">*</span>
+                Club Name <span className="text-indigo-400">*</span>
               </label>
               <input
                 type="text"
@@ -205,7 +205,7 @@ export const ClubEditorPage: React.FC = () => {
 
             <div>
               <label className={labelClasses}>
-                Slug (URL Identifier) <span className="text-[#F042FF]">*</span>
+                Slug (URL Identifier) <span className="text-indigo-400">*</span>
               </label>
               <input
                 type="text"
@@ -222,7 +222,7 @@ export const ClubEditorPage: React.FC = () => {
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
               <label className={labelClasses}>
-                Category <span className="text-[#F042FF]">*</span>
+                Category <span className="text-indigo-400">*</span>
               </label>
               <input
                 type="text"
@@ -281,35 +281,59 @@ export const ClubEditorPage: React.FC = () => {
             </div>
           </div>
 
-          {/* Logo & Cover Banner Upload Section */}
-          <div className="pt-4 border-t border-[#7226FF]/25 space-y-4">
-            <h3 className="font-display font-bold text-sm text-[#FFE5F1]">Club Media & Visual Assets</h3>
-
-            {/* Emblem Logo Upload */}
+          {/* Club Media & Visual Assets Section */}
+          <div className="pt-5 border-t border-slate-800 space-y-6">
             <div>
-              <label className={labelClasses}>Club Emblem / Logo Image</label>
-              <div className="flex items-center gap-4 mt-1.5">
-                {formData.logo && (
-                  <div className="w-14 h-14 rounded-2xl bg-[#010030] border border-[#7226FF]/40 p-1 flex items-center justify-center overflow-hidden shrink-0">
-                    <img
-                      src={getLogoUrl(formData.logo)}
-                      alt="Logo Preview"
-                      className="w-full h-full object-contain"
-                    />
-                  </div>
-                )}
-                <label className="cursor-pointer inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-[#010030]/80 border border-[#7226FF]/35 text-xs font-mono text-[#FFE5F1] hover:border-[#F042FF] transition">
-                  <Upload className="w-4 h-4 text-[#87F5F5]" />
-                  <span>{logoFile ? logoFile.name : 'Upload Emblem Logo File'}</span>
+              <h3 className="font-display font-bold text-base text-slate-100">Club Media & Visual Assets</h3>
+              <p className="text-xs text-slate-400 mt-0.5">
+                Upload separate images tailored specifically for the Spotlight carousel framing and Detail profile page.
+              </p>
+            </div>
+
+            {/* 1. Spotlight Cover Image Upload (3072x1560 Landscape) */}
+            <div className="p-4 rounded-xl bg-slate-950 border border-slate-800 space-y-3">
+              <div>
+                <label className="block text-xs font-semibold text-slate-200">
+                  1. Spotlight Cover Image <span className="text-indigo-400 font-mono">(Expected: 3072 × 1560 ~1.97:1 Landscape)</span>
+                </label>
+                <p className="text-[11px] text-slate-400 mt-0.5">
+                  Used for the homepage Spotlight carousel. Displays with consistent 1.97:1 landscape framing and object-cover cropping.
+                </p>
+              </div>
+
+              {formData.banner && (
+                <div className="w-full aspect-[3072/1560] max-h-48 rounded-lg bg-slate-900 border border-slate-800 overflow-hidden relative shadow-sm">
+                  <img
+                    src={getLogoUrl(formData.banner)}
+                    alt="Spotlight Banner Preview"
+                    className="w-full h-full object-cover rounded-lg"
+                  />
+                  <span className="absolute bottom-2 right-2 text-[10px] font-semibold bg-slate-950/80 border border-slate-800 px-2 py-0.5 rounded text-indigo-400">
+                    Preview (1.97:1 Object-Cover)
+                  </span>
+                </div>
+              )}
+
+              <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
+                <input
+                  type="text"
+                  placeholder="Paste Spotlight Cover image URL (e.g. https://...)"
+                  value={formData.banner}
+                  onChange={(e) => setFormData({ ...formData, banner: e.target.value })}
+                  className={inputClasses}
+                />
+                <label className="cursor-pointer inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-slate-800 border border-slate-700 text-xs font-semibold text-slate-200 hover:bg-slate-700 transition shrink-0 whitespace-nowrap">
+                  <ImageIcon className="w-4 h-4 text-indigo-400" />
+                  <span>{bannerFile ? bannerFile.name : 'Upload Spotlight File (3072×1560)'}</span>
                   <input
                     type="file"
                     accept="image/*"
                     onChange={async (e) => {
                       if (e.target.files && e.target.files[0]) {
                         const file = e.target.files[0];
-                        setLogoFile(file);
-                        const dataUrl = await compressImage(file, 400, 400, 0.9);
-                        setFormData((prev) => ({ ...prev, logo: dataUrl }));
+                        setBannerFile(file);
+                        const dataUrl = await compressImage(file, 3072, 1560, 0.88);
+                        setFormData((prev) => ({ ...prev, banner: dataUrl }));
                       }
                     }}
                     className="hidden"
@@ -318,42 +342,50 @@ export const ClubEditorPage: React.FC = () => {
               </div>
             </div>
 
-            {/* Cover Banner Image Upload */}
-            <div>
-              <label className={labelClasses}>Header Cover Banner Picture (Replaces Large Gradient Area)</label>
-              <div className="space-y-2 mt-1.5">
-                {formData.banner && (
-                  <div className="w-full h-28 rounded-2xl bg-[#010030] border border-[#7226FF]/40 p-1 flex items-center justify-center overflow-hidden shrink-0 relative">
+            {/* 2. Detail Page Emblem & Profile Image Upload (3:4 Portrait Ratio) */}
+            <div className="p-4 rounded-xl bg-slate-950 border border-slate-800 space-y-3">
+              <div>
+                <label className="block text-xs font-semibold text-slate-200">
+                  2. Detail Page Emblem & Profile Image <span className="text-indigo-400 font-mono">(Expected: 3:4 Instagram Portrait Ratio)</span>
+                </label>
+                <p className="text-[11px] text-slate-400 mt-0.5">
+                  Used for the club profile page emblem box and directory grid. Fills the 3:4 portrait ratio cleanly with object-cover cropping.
+                </p>
+              </div>
+
+              <div className="flex items-center gap-4">
+                {formData.logo && (
+                  <div className="w-24 h-32 aspect-[3/4] rounded-lg bg-slate-900 border border-slate-800 overflow-hidden shrink-0 relative shadow-sm">
                     <img
-                      src={getLogoUrl(formData.banner)}
-                      alt="Banner Preview"
-                      className="w-full h-full object-cover rounded-xl"
+                      src={getLogoUrl(formData.logo)}
+                      alt="Detail Emblem Preview"
+                      className="w-full h-full object-cover rounded-lg"
                     />
-                    <span className="absolute bottom-2 right-2 font-mono text-[9px] bg-black/60 px-2 py-0.5 rounded text-[#87F5F5]">
-                      Cover Image Preview
+                    <span className="absolute bottom-1.5 left-1/2 -translate-x-1/2 text-[9px] font-semibold bg-slate-950/80 px-1.5 py-0.5 rounded text-indigo-400 whitespace-nowrap">
+                      3:4 Preview
                     </span>
                   </div>
                 )}
-                <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
+                <div className="flex-1 space-y-2">
                   <input
                     type="text"
-                    placeholder="Paste image URL (e.g. https://...)"
-                    value={formData.banner}
-                    onChange={(e) => setFormData({ ...formData, banner: e.target.value })}
+                    placeholder="Paste Detail Emblem image URL (e.g. https://...)"
+                    value={formData.logo}
+                    onChange={(e) => setFormData({ ...formData, logo: e.target.value })}
                     className={inputClasses}
                   />
-                  <label className="cursor-pointer inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-[#010030]/80 border border-[#7226FF]/35 text-xs font-mono text-[#FFE5F1] hover:border-[#F042FF] transition shrink-0 whitespace-nowrap">
-                    <ImageIcon className="w-4 h-4 text-[#F042FF]" />
-                    <span>{bannerFile ? bannerFile.name : 'Upload Picture File'}</span>
+                  <label className="cursor-pointer inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-slate-800 border border-slate-700 text-xs font-semibold text-slate-200 hover:bg-slate-700 transition">
+                    <Upload className="w-4 h-4 text-indigo-400" />
+                    <span>{logoFile ? logoFile.name : 'Upload Detail File (3:4 Ratio)'}</span>
                     <input
                       type="file"
                       accept="image/*"
                       onChange={async (e) => {
                         if (e.target.files && e.target.files[0]) {
                           const file = e.target.files[0];
-                          setBannerFile(file);
-                          const dataUrl = await compressImage(file, 1200, 600, 0.85);
-                          setFormData((prev) => ({ ...prev, banner: dataUrl }));
+                          setLogoFile(file);
+                          const dataUrl = await compressImage(file, 600, 800, 0.90);
+                          setFormData((prev) => ({ ...prev, logo: dataUrl }));
                         }
                       }}
                       className="hidden"
@@ -365,8 +397,8 @@ export const ClubEditorPage: React.FC = () => {
           </div>
 
           {/* Faculty Coordinator & Socials */}
-          <div className="pt-4 border-t border-[#7226FF]/25 space-y-4">
-            <h3 className="font-display font-bold text-sm text-[#FFE5F1]">Coordinator & External Links</h3>
+          <div className="pt-4 border-t border-slate-800 space-y-4">
+            <h3 className="font-display font-bold text-sm text-slate-100">Coordinator & External Links</h3>
             
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div>
@@ -394,13 +426,13 @@ export const ClubEditorPage: React.FC = () => {
           </div>
 
           {/* Student Leads */}
-          <div className="pt-4 border-t border-[#7226FF]/25 space-y-4">
+          <div className="pt-4 border-t border-slate-800 space-y-4">
             <div className="flex items-center justify-between">
-              <h3 className="font-display font-bold text-sm text-[#FFE5F1]">Student Leads / Office Bearers</h3>
+              <h3 className="font-display font-bold text-sm text-slate-100">Student Leads / Office Bearers</h3>
               <button
                 type="button"
                 onClick={handleAddLead}
-                className="inline-flex items-center gap-1.5 text-xs font-mono text-[#87F5F5] hover:text-[#F042FF] transition"
+                className="inline-flex items-center gap-1.5 text-xs font-semibold text-indigo-400 hover:text-indigo-300 transition"
               >
                 <Plus className="w-4 h-4" />
                 Add Student Lead
@@ -408,13 +440,13 @@ export const ClubEditorPage: React.FC = () => {
             </div>
 
             {leads.length === 0 ? (
-              <p className="text-xs font-mono text-[rgba(255,229,241,0.5)] italic">
+              <p className="text-xs text-slate-500 italic">
                 No student leads added yet. Click above to assign public club heads.
               </p>
             ) : (
               <div className="space-y-3">
                 {leads.map((lead, index) => (
-                  <div key={index} className="flex items-center gap-3 p-3 rounded-xl bg-[#010030]/60 border border-[#7226FF]/30">
+                  <div key={index} className="flex items-center gap-3 p-3 rounded-xl bg-slate-950 border border-slate-800">
                     <input
                       type="text"
                       placeholder="Lead Name"
@@ -432,7 +464,7 @@ export const ClubEditorPage: React.FC = () => {
                     <button
                       type="button"
                       onClick={() => handleRemoveLead(index)}
-                      className="p-2 text-red-400 hover:text-red-300 hover:bg-red-500/10 rounded-lg transition shrink-0"
+                      className="p-2 text-red-400 hover:text-red-300 hover:bg-red-950/30 rounded-lg transition shrink-0"
                     >
                       <Trash2 className="w-4 h-4" />
                     </button>
@@ -443,41 +475,41 @@ export const ClubEditorPage: React.FC = () => {
           </div>
 
           {/* Toggles */}
-          <div className="pt-4 border-t border-[#7226FF]/25 flex flex-wrap items-center gap-6">
-            <label className="flex items-center gap-2.5 cursor-pointer text-xs font-mono text-[#FFE5F1]">
+          <div className="pt-4 border-t border-slate-800 flex flex-wrap items-center gap-6">
+            <label className="flex items-center gap-2.5 cursor-pointer text-xs font-semibold text-slate-200">
               <input
                 type="checkbox"
                 checked={formData.registration_open}
                 onChange={(e) => setFormData({ ...formData, registration_open: e.target.checked })}
-                className="w-4 h-4 rounded border-[#7226FF]/40 bg-[#010030] text-[#F042FF] focus:ring-[#F042FF]"
+                className="w-4 h-4 rounded border-slate-700 bg-slate-950 text-indigo-600 focus:ring-indigo-500"
               />
               <span>Registration Open for Students</span>
             </label>
 
-            <label className="flex items-center gap-2.5 cursor-pointer text-xs font-mono text-[#FFE5F1]">
+            <label className="flex items-center gap-2.5 cursor-pointer text-xs font-semibold text-slate-200">
               <input
                 type="checkbox"
                 checked={formData.is_active}
                 onChange={(e) => setFormData({ ...formData, is_active: e.target.checked })}
-                className="w-4 h-4 rounded border-[#7226FF]/40 bg-[#010030] text-[#F042FF] focus:ring-[#F042FF]"
+                className="w-4 h-4 rounded border-slate-700 bg-slate-950 text-indigo-600 focus:ring-indigo-500"
               />
               <span>Club Active on Directory</span>
             </label>
           </div>
 
           {/* Form Actions */}
-          <div className="pt-6 border-t border-[#7226FF]/25 flex items-center justify-end gap-3">
+          <div className="pt-6 border-t border-slate-800 flex items-center justify-end gap-3">
             <button
               type="button"
               onClick={() => navigate('/admin/clubs')}
-              className="px-5 py-2.5 rounded-xl border border-[rgba(135,245,245,0.2)] text-xs font-mono text-[rgba(255,229,241,0.68)] hover:text-[#FFE5F1] transition"
+              className="px-5 py-2.5 rounded-xl border border-slate-800 text-xs font-semibold text-slate-300 hover:bg-slate-800 transition"
             >
               Cancel
             </button>
             <button
               type="submit"
               disabled={saving}
-              className="inline-flex items-center gap-2 px-6 py-2.5 rounded-xl btn-primary-gradient font-bold text-xs shadow-magentaGlow disabled:opacity-50"
+              className="inline-flex items-center gap-2 px-6 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white font-semibold text-xs shadow-sm disabled:opacity-50 transition"
             >
               <CheckCircle2 className="w-4 h-4" />
               <span>{saving ? 'Saving...' : isEdit ? 'Save Changes' : 'Create Club'}</span>

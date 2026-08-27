@@ -156,14 +156,14 @@ export const FloatingShowcase: React.FC<FloatingShowcaseProps> = ({ clubs = [] }
                   : 'border-slate-800 bg-slate-900/70 hover:border-slate-700'
               }`}
             >
-              {/* Media Card Banner Container with Warm Accent reserved for Active Hero */}
-              <div className="w-full h-32 sm:h-36 rounded-xl bg-slate-950 border border-slate-800 p-3 flex flex-col justify-between relative overflow-hidden group">
+              {/* Media Card Banner Container (Standard 3072x1560 Landscape Framing) */}
+              <div className="w-full aspect-[3072/1560] h-32 sm:h-36 rounded-xl bg-slate-950 border border-slate-800 p-3 flex flex-col justify-between relative overflow-hidden group">
                 {/* Custom Banner Cover Image */}
                 {bannerUrl ? (
                   <img
                     src={bannerUrl}
                     alt={item.name}
-                    className="absolute inset-0 w-full h-full object-cover z-0 opacity-80 group-hover:scale-105 transition-transform duration-300"
+                    className="absolute inset-0 w-full h-full object-cover z-0 opacity-85 group-hover:scale-105 transition-transform duration-300"
                   />
                 ) : (
                   <div className={`absolute inset-0 z-0 opacity-40 bg-gradient-to-br ${accent.gradientBg}`} />
@@ -183,11 +183,11 @@ export const FloatingShowcase: React.FC<FloatingShowcaseProps> = ({ clubs = [] }
                   <Sparkles className="w-3.5 h-3.5 text-amber-400" />
                 </div>
 
-                {/* Emblem & Name Row */}
+                {/* Emblem & Name Row (3:4 Portrait Ratio Emblem Box) */}
                 <div className="flex items-center gap-2.5 z-10">
-                  <div className={`w-8 h-8 rounded-lg border p-0.5 flex items-center justify-center shrink-0 overflow-hidden ${accent.bgTint}`}>
+                  <div className={`w-7 sm:w-8 aspect-[3/4] rounded-lg border p-0.5 flex items-center justify-center shrink-0 overflow-hidden ${accent.bgTint}`}>
                     {logoUrl ? (
-                      <img src={logoUrl} alt={item.name} className="w-full h-full object-contain rounded-md" />
+                      <img src={logoUrl} alt={item.name} className="w-full h-full object-cover rounded-md" />
                     ) : (
                       accent.icon
                     )}

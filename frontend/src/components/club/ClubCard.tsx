@@ -37,9 +37,9 @@ export const ClubCard: React.FC<ClubCardProps> = ({
       {/* Top Header: Category Tinted Emblem + Category Badge + Selection Toggle */}
       <div className="flex items-start justify-between gap-3 mb-3">
         <div className="flex items-center gap-3">
-          <div className={`w-10 h-10 rounded-lg p-1 flex items-center justify-center shrink-0 border transition-transform duration-150 group-hover:scale-105 ${accent.bgTint}`}>
+          <div className={`w-9 sm:w-10 aspect-[3/4] rounded-lg p-0.5 flex items-center justify-center shrink-0 border transition-transform duration-150 group-hover:scale-105 ${accent.bgTint}`}>
             {logoUrl ? (
-              <img src={logoUrl} alt={club.name} className="w-full h-full object-contain rounded-md" />
+              <img src={logoUrl} alt={club.name} className="w-full h-full object-cover rounded-md" />
             ) : (
               accent.icon
             )}
