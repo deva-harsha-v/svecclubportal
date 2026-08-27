@@ -1,12 +1,11 @@
 import React, { useState, useEffect } from 'react';
-import { useParams, useNavigate, Link } from 'react-router-dom';
-import { ArrowLeft, Check, Instagram, Linkedin, Globe, Heart, Sparkles, UserCheck } from 'lucide-react';
+import { useParams, useNavigate } from 'react-router-dom';
+import { ArrowLeft, Check, Instagram, Linkedin, Globe, Heart } from 'lucide-react';
 import { api } from '../services/api';
 import { ClubDetail } from '../types';
 import { LoadingSpinner } from '../components/ui/LoadingSpinner';
 import { useClubSelection } from '../hooks/useClubSelection';
 import { getClubAccent } from '../utils/categoryIcons';
-import { RegistrationProgress } from '../components/registration/RegistrationProgress';
 import { getLogoUrl } from '../utils/logoHelper';
 
 export const ClubDetailsPage: React.FC = () => {
@@ -31,7 +30,7 @@ export const ClubDetailsPage: React.FC = () => {
       const data = await api.getClubBySlug(clubSlug);
       setClub(data);
     } catch (err: any) {
-      setError(err.message || 'Club profile unavailable.');
+      setError(err.message || 'Failed to load club details.');
     } finally {
       setLoading(false);
     }
@@ -41,86 +40,83 @@ export const ClubDetailsPage: React.FC = () => {
 
   if (error || !club) {
     return (
-      <div className="max-w-2xl mx-auto px-4 py-16 text-center portal-bg min-h-screen">
-        <div className="glass-card p-8 rounded-3xl">
-          <h2 className="font-display font-bold text-xl text-[#FFE5F1]">Club Not Found</h2>
-          <p className="mt-2 text-sm text-[#FFE5F1]/70">{error || 'The requested club profile does not exist.'}</p>
-          <Link
-            to="/"
-            className="inline-flex items-center gap-2 mt-6 px-6 py-2.5 rounded-full btn-primary-gradient text-xs font-semibold"
+      <div className="min-h-screen portal-bg flex items-center justify-center p-4">
+        <div className="max-w-md w-full text-center space-y-4 bg-slate-900 border border-slate-800 p-8 rounded-2xl">
+          <h2 className="font-display font-bold text-xl text-slate-100">Club Not Found</h2>
+          <p className="text-sm text-slate-400">{error || 'The requested club profile does not exist.'}</p>
+          <button
+            onClick={() => navigate('/')}
+            className="px-5 py-2.5 rounded-lg bg-indigo-600 text-white text-xs font-semibold hover:bg-indigo-500 transition"
           >
-            <ArrowLeft className="w-4 h-4" />
             Back to Directory
-          </Link>
+          </button>
         </div>
       </div>
     );
   }
 
-  const selected = isSelected(club.slug);
   const accent = getClubAccent(club.category, club.name);
+  const selected = isSelected(club.slug);
 
   return (
-    <div className="portal-bg min-h-screen py-8">
-      <div className="max-w-4xl mx-auto px-4 sm:px-6 space-y-6">
-        {/* Registration Flow Progress Bar */}
-        <RegistrationProgress currentStep={1} />
-
-        {/* Back button */}
+    <div className="portal-bg min-h-screen py-6 sm:py-10 px-4 sm:px-8">
+      <div className="max-w-4xl mx-auto space-y-6">
+        {/* Navigation Breadcrumb */}
         <button
           onClick={() => navigate('/')}
-          className="inline-flex items-center gap-2 text-xs font-mono text-[#FFE5F1]/70 hover:text-white transition"
+          className="inline-flex items-center gap-2 text-xs font-medium text-slate-400 hover:text-slate-100 transition"
         >
           <ArrowLeft className="w-4 h-4" />
           Back to Directory
         </button>
 
-        {/* Product Card Inspired Editorial Layout Container */}
-        <div className="glass-panel rounded-3xl p-6 sm:p-8 shadow-2xl border border-[#7226FF]/30 space-y-8 relative overflow-hidden">
-          {/* Ambient Lighting Backdrop */}
-          <div className="absolute top-0 right-0 w-96 h-96 rounded-full bg-gradient-to-br from-[#7226FF]/15 via-[#F042FF]/10 to-transparent blur-3xl pointer-events-none" />
-
-          {/* 1. LARGE CLUB VISUAL / MEDIA AREA (Hero Card Visual Area) */}
-          <div className={`w-full h-56 sm:h-72 rounded-3xl bg-gradient-to-br ${accent.gradientBg} border border-[#7226FF]/30 p-6 flex flex-col justify-between relative shadow-[0_0_30px_rgba(114,38,255,0.2)] overflow-hidden group`}>
+        {/* Profile Card Container */}
+        <div className="bg-slate-900 rounded-2xl p-6 sm:p-8 border border-slate-800 space-y-8 relative overflow-hidden">
+          
+          {/* 1. HERO VISUAL AREA */}
+          <div className="w-full h-56 sm:h-72 rounded-xl bg-slate-950 border border-slate-800 p-6 flex flex-col justify-between relative overflow-hidden group">
             {/* Custom Banner Cover Image if set */}
-            {club.banner && (
+            {club.banner ? (
               <img
                 src={getLogoUrl(club.banner)}
                 alt={club.name}
-                className="absolute inset-0 w-full h-full object-cover z-0 opacity-80 group-hover:scale-105 transition-transform duration-700"
+                className="absolute inset-0 w-full h-full object-cover z-0 opacity-80 group-hover:scale-105 transition-transform duration-500"
               />
+            ) : (
+              <div className={`absolute inset-0 z-0 opacity-40 bg-gradient-to-br ${accent.gradientBg}`} />
             )}
-            <div className="absolute inset-0 bg-gradient-to-t from-[#010030]/90 via-[#160078]/50 to-transparent z-0 pointer-events-none" />
+            <div className="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-950/50 to-transparent z-0 pointer-events-none" />
 
-            {/* Top Row: Category & Heart Favorite Toggle */}
+            {/* Top Row: Category Badge & Favorite Toggle */}
             <div className="flex items-center justify-between z-10">
-              <span className={`font-mono text-xs font-bold border px-3 py-1 rounded-full uppercase tracking-wider ${accent.badgeClass}`}>
+              <span className={`text-xs font-semibold border px-3 py-1 rounded-md ${accent.badgeClass}`}>
                 {accent.categoryLabel}
               </span>
               <button
                 onClick={() => setIsLiked(!isLiked)}
-                className={`p-2.5 rounded-full backdrop-blur-md border border-white/20 transition ${
-                  isLiked ? 'bg-[#F042FF] text-white border-[#F042FF]' : 'bg-black/30 text-[#FFE5F1]/80 hover:text-white'
+                className={`p-2.5 rounded-lg border border-slate-700 backdrop-blur-md transition ${
+                  isLiked ? 'bg-indigo-600 text-white border-indigo-500' : 'bg-slate-900/60 text-slate-300 hover:text-white'
                 }`}
                 title="Favorite"
               >
                 <Heart className={`w-4 h-4 ${isLiked ? 'fill-white' : ''}`} />
               </button>
             </div>
+
             {/* Bottom Row inside Media: Logo & SVEC Brand */}
             <div className="flex items-center gap-4 z-10">
-              <div className="w-16 h-16 rounded-2xl bg-black/40 backdrop-blur-md border border-white/20 p-1 flex items-center justify-center overflow-hidden shadow-lg">
+              <div className={`w-16 h-16 rounded-xl border p-1 flex items-center justify-center overflow-hidden shrink-0 ${accent.bgTint}`}>
                 {getLogoUrl(club.logo) ? (
-                  <img src={getLogoUrl(club.logo)} alt={club.name} className="w-full h-full object-contain rounded-xl" />
+                  <img src={getLogoUrl(club.logo)} alt={club.name} className="w-full h-full object-contain rounded-lg" />
                 ) : (
                   accent.icon
                 )}
               </div>
               <div>
-                <span className="font-mono text-xs font-bold text-[#87F5F5] uppercase tracking-wider block">
+                <span className="text-xs font-bold text-indigo-400 uppercase tracking-wider block">
                   Sri Vasavi Engineering College
                 </span>
-                <h2 className="font-display font-bold text-xl sm:text-2xl text-[#FFE5F1]">
+                <h2 className="font-display font-bold text-xl sm:text-2xl text-slate-100">
                   {club.name}
                 </h2>
               </div>
@@ -128,31 +124,31 @@ export const ClubDetailsPage: React.FC = () => {
           </div>
 
           {/* 2. CLUB IDENTITY & PRIMARY JOIN CTA */}
-          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-6 pb-6 border-b border-[#7226FF]/20">
+          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-6 pb-6 border-b border-slate-800">
             <div>
-              <h1 className="font-display font-extrabold text-2xl sm:text-3xl text-[#FFE5F1]">
+              <h1 className="font-display font-bold text-2xl sm:text-3xl text-slate-100">
                 {club.name}
               </h1>
               {club.tagline && (
-                <p className="text-sm text-[#FFE5F1]/80 font-sans mt-1">
+                <p className="text-sm text-slate-300 mt-1">
                   {club.tagline}
                 </p>
               )}
             </div>
 
-            {/* Join Button (Primary CTA with Gradient & Glow) */}
+            {/* Join Button */}
             <div className="w-full sm:w-auto shrink-0">
               {!club.registration_open ? (
-                <span className="w-full sm:w-auto inline-flex items-center justify-center px-6 py-3 rounded-full bg-red-500/10 border border-red-500/30 text-red-400 font-bold text-xs uppercase tracking-wider">
+                <span className="w-full sm:w-auto inline-flex items-center justify-center px-6 py-2.5 rounded-lg bg-slate-800 border border-slate-700 text-slate-400 font-semibold text-xs uppercase tracking-wider">
                   Registration Closed
                 </span>
               ) : (
                 <button
                   onClick={() => toggleClub(club)}
-                  className={`w-full sm:w-auto inline-flex items-center justify-center gap-2.5 px-8 py-3.5 rounded-full font-bold text-sm transition shadow-lg ${
+                  className={`w-full sm:w-auto inline-flex items-center justify-center gap-2 px-6 py-2.5 rounded-lg font-semibold text-sm transition ${
                     selected
-                      ? 'bg-[#87F5F5] text-[#010030] shadow-cyanGlow font-mono'
-                      : 'btn-primary-gradient'
+                      ? 'bg-emerald-600 text-white'
+                      : 'bg-indigo-600 hover:bg-indigo-500 text-white'
                   }`}
                 >
                   {selected ? (
@@ -161,7 +157,7 @@ export const ClubDetailsPage: React.FC = () => {
                       Selected for Registration
                     </>
                   ) : (
-                    '+ Join This Club'
+                    '+ Select This Club'
                   )}
                 </button>
               )}
@@ -171,26 +167,26 @@ export const ClubDetailsPage: React.FC = () => {
           {/* 3. ABOUT DESCRIPTION */}
           {club.description && (
             <div className="space-y-2">
-              <h3 className="font-display font-bold text-lg text-[#FFE5F1]">
+              <h3 className="font-display font-bold text-lg text-slate-100">
                 About {club.name}
               </h3>
-              <p className="text-sm text-[#FFE5F1]/80 leading-relaxed whitespace-pre-line font-sans">
+              <p className="text-sm text-slate-300 leading-relaxed whitespace-pre-line">
                 {club.description}
               </p>
             </div>
           )}
 
-          {/* 4. WHAT WE DO (Interactive Compact Cards) */}
+          {/* 4. WHAT WE DO */}
           {club.what_we_do && club.what_we_do.length > 0 && (
             <div className="space-y-3">
-              <h3 className="font-display font-bold text-lg text-[#FFE5F1]">What We Do</h3>
+              <h3 className="font-display font-bold text-lg text-slate-100">What We Do</h3>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 {club.what_we_do.map((act, i) => (
                   <div
                     key={i}
-                    className="group flex items-center gap-3 p-3.5 rounded-2xl bg-[#160078]/60 border border-[#7226FF]/30 text-xs font-semibold text-[#FFE5F1] hover:border-[#7226FF] hover:bg-[#1E009C]/80 hover:-translate-y-0.5 hover:shadow-[0_0_15px_rgba(114,38,255,0.3)] transition-all duration-200"
+                    className="flex items-center gap-3 p-3.5 rounded-xl bg-slate-950/60 border border-slate-800 text-xs font-medium text-slate-200"
                   >
-                    <span className="w-2 h-2 rounded-full bg-[#87F5F5] group-hover:bg-[#F042FF] transition-colors shrink-0" />
+                    <span className="w-2 h-2 rounded-full bg-indigo-400 shrink-0" />
                     <span>{act}</span>
                   </div>
                 ))}
@@ -198,15 +194,15 @@ export const ClubDetailsPage: React.FC = () => {
             </div>
           )}
 
-          {/* 5. DOMAINS & FOCUS AREAS (Hashtag Pills) */}
+          {/* 5. DOMAINS & FOCUS AREAS */}
           {club.domains && club.domains.length > 0 && (
             <div className="space-y-2">
-              <h3 className="font-display font-bold text-lg text-[#FFE5F1]">Domains & Focus Areas</h3>
+              <h3 className="font-display font-bold text-lg text-slate-100">Domains & Focus Areas</h3>
               <div className="flex flex-wrap gap-2">
                 {club.domains.map((dom, i) => (
                   <span
                     key={i}
-                    className="px-3.5 py-1.5 rounded-full bg-[#160078]/80 border border-[#7226FF]/30 text-xs font-mono font-medium text-[#FFE5F1]/80 hover:border-[#F042FF] hover:text-[#FFE5F1] hover:shadow-[0_0_15px_rgba(240,66,255,0.25)] transition-all"
+                    className="px-3 py-1 rounded-md bg-slate-800/60 border border-slate-700 text-xs font-medium text-slate-300"
                   >
                     #{dom}
                   </span>
@@ -216,26 +212,26 @@ export const ClubDetailsPage: React.FC = () => {
           )}
 
           {/* 6. FACULTY COORDINATOR & LEADS */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 pt-4 border-t border-[#7226FF]/20">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 pt-4 border-t border-slate-800">
             {club.faculty_coordinator && (
-              <div className="p-4 rounded-2xl bg-[#160078]/60 border border-[#7226FF]/30">
-                <span className="font-mono text-[10px] font-semibold text-[#87F5F5] uppercase tracking-wider block mb-1">
+              <div className="p-4 rounded-xl bg-slate-950/60 border border-slate-800">
+                <span className="text-xs font-semibold text-indigo-400 uppercase tracking-wider block mb-1">
                   Faculty Coordinator
                 </span>
-                <div className="font-display font-bold text-sm text-[#FFE5F1]">{club.faculty_coordinator}</div>
+                <div className="font-display font-bold text-sm text-slate-100">{club.faculty_coordinator}</div>
               </div>
             )}
 
             {club.leads && club.leads.length > 0 && (
-              <div className="p-4 rounded-2xl bg-[#160078]/60 border border-[#7226FF]/30">
-                <span className="font-mono text-[10px] font-semibold text-[#87F5F5] uppercase tracking-wider block mb-2">
+              <div className="p-4 rounded-xl bg-slate-950/60 border border-slate-800">
+                <span className="text-xs font-semibold text-indigo-400 uppercase tracking-wider block mb-2">
                   Student Leads & Office Bearers
                 </span>
                 <div className="space-y-1.5">
                   {club.leads.map((lead, i) => (
                     <div key={i} className="flex items-center justify-between text-xs">
-                      <span className="font-semibold text-[#FFE5F1]">{lead.name}</span>
-                      {lead.role && <span className="font-mono text-[#FFE5F1]/70">{lead.role}</span>}
+                      <span className="font-semibold text-slate-100">{lead.name}</span>
+                      {lead.role && <span className="text-slate-400">{lead.role}</span>}
                     </div>
                   ))}
                 </div>
@@ -244,23 +240,23 @@ export const ClubDetailsPage: React.FC = () => {
           </div>
 
           {/* 7. SOCIAL LINKS */}
-          <div className="pt-4 border-t border-[#7226FF]/20 flex flex-wrap gap-4">
+          <div className="pt-4 border-t border-slate-800 flex flex-wrap gap-3">
             <a
               href={club.instagram && club.instagram.startsWith('http') ? club.instagram : "https://www.instagram.com/sves_official_info?igsi=MW80ZXQzZzNoY24zaQ=="}
               target="_blank"
               rel="noreferrer"
-              className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-[#160078] border border-[#7226FF]/40 text-xs font-semibold text-[#FFE5F1] hover:border-[#F042FF] hover:shadow-[0_0_15px_rgba(240,66,255,0.3)] transition-all"
+              className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-slate-800 border border-slate-700 text-xs font-medium text-slate-200 hover:border-slate-600 transition"
             >
-              <Instagram className="w-4 h-4 text-[#F042FF]" />
+              <Instagram className="w-4 h-4 text-pink-400" />
               Instagram
             </a>
             <a
               href={club.website && club.website.startsWith('http') ? club.website : "https://srivasaviengg.ac.in/"}
               target="_blank"
               rel="noreferrer"
-              className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-[#160078] border border-[#7226FF]/40 text-xs font-semibold text-[#FFE5F1] hover:border-[#87F5F5] transition-all"
+              className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-slate-800 border border-slate-700 text-xs font-medium text-slate-200 hover:border-slate-600 transition"
             >
-              <Globe className="w-4 h-4 text-[#87F5F5]" />
+              <Globe className="w-4 h-4 text-indigo-400" />
               College Website
             </a>
             {club.linkedin && (
@@ -268,9 +264,9 @@ export const ClubDetailsPage: React.FC = () => {
                 href={club.linkedin}
                 target="_blank"
                 rel="noreferrer"
-                className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-[#160078] border border-[#7226FF]/40 text-xs font-semibold text-[#FFE5F1] hover:border-[#7226FF] transition-all"
+                className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-slate-800 border border-slate-700 text-xs font-medium text-slate-200 hover:border-slate-600 transition"
               >
-                <Linkedin className="w-4 h-4 text-[#7226FF]" />
+                <Linkedin className="w-4 h-4 text-sky-400" />
                 LinkedIn
               </a>
             )}

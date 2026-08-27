@@ -43,49 +43,48 @@ export const AdminSidebar: React.FC = () => {
   ];
 
   const sidebarContent = (
-    <div className="flex flex-col justify-between h-full">
+    <div className="flex flex-col justify-between h-full bg-[#0B0F17] text-slate-100">
       <div>
         {/* SVEC Admin Brand */}
-        <div className="p-5 border-b border-[rgba(135,245,245,0.1)] flex items-center justify-between">
+        <div className="p-4 border-b border-slate-800 flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-xl bg-black/40 border border-[rgba(135,245,245,0.15)] p-1 flex items-center justify-center shrink-0 shadow">
+            <div className="w-9 h-9 rounded-lg bg-slate-900 border border-slate-800 p-1 flex items-center justify-center shrink-0">
               <img src="/svec_logo.png" alt="SVEC Logo" className="w-full h-full object-contain" />
             </div>
             <div>
-              <h2 className="font-display font-bold text-[#FFE5F1] text-sm leading-tight">
-                SVEC CLUB PORTAL
+              <h2 className="font-display font-bold text-slate-100 text-sm leading-tight">
+                SVEC Club Portal
               </h2>
-              <span className="font-mono text-[9px] text-[#87F5F5] tracking-widest uppercase block mt-0.5">
-                ADMINISTRATION
+              <span className="text-[10px] text-indigo-400 uppercase tracking-wider block font-semibold">
+                Administration
               </span>
             </div>
           </div>
 
-          {/* Close button for mobile drawer */}
           <button
             onClick={() => setMobileOpen(false)}
-            className="lg:hidden p-1.5 rounded-lg text-[rgba(255,229,241,0.45)] hover:text-[#FFE5F1]"
+            className="lg:hidden p-1.5 rounded-lg text-slate-400 hover:text-white"
           >
             <X className="w-5 h-5" />
           </button>
         </div>
 
         {/* Quick Action Export */}
-        <div className="px-4 py-4 border-b border-[rgba(135,245,245,0.1)]">
+        <div className="px-4 py-3.5 border-b border-slate-800">
           <button
             onClick={() => {
               setMobileOpen(false);
               handleExport();
             }}
-            className="w-full inline-flex items-center justify-center gap-2 px-4 py-2 rounded-xl bg-[rgba(135,245,245,0.1)] text-[#87F5F5] hover:bg-[rgba(135,245,245,0.2)] border border-[rgba(135,245,245,0.2)] text-xs font-mono font-semibold transition"
+            className="w-full inline-flex items-center justify-center gap-2 px-3.5 py-2 rounded-lg bg-slate-900 text-indigo-400 hover:bg-slate-800 border border-slate-800 text-xs font-semibold transition"
           >
-            <FileSpreadsheet className="w-4 h-4 text-[#87F5F5]" />
+            <FileSpreadsheet className="w-4 h-4 text-indigo-400" />
             Export Excel (.xlsx)
           </button>
         </div>
 
         {/* Navigation */}
-        <nav className="p-4 space-y-1">
+        <nav className="p-3 space-y-1">
           {navItems.map((item) => {
             const Icon = item.icon;
             return (
@@ -94,10 +93,10 @@ export const AdminSidebar: React.FC = () => {
                 to={item.to}
                 onClick={() => setMobileOpen(false)}
                 className={({ isActive }) =>
-                  `flex items-center gap-3 px-4 py-2.5 rounded-xl text-xs font-semibold transition border-l-2 ${
+                  `flex items-center gap-3 px-3.5 py-2.5 rounded-lg text-xs font-medium transition ${
                     isActive
-                      ? 'border-l-[#F042FF] bg-[rgba(114,38,255,0.22)] text-[#FFE5F1] font-bold shadow-md'
-                      : 'border-l-transparent text-[rgba(255,229,241,0.68)] hover:text-[#FFE5F1] hover:bg-[rgba(114,38,255,0.12)]'
+                      ? 'bg-indigo-600/15 text-indigo-300 font-semibold border-l-2 border-indigo-500'
+                      : 'text-slate-400 hover:text-slate-100 hover:bg-slate-900/60'
                   }`
                 }
               >
@@ -110,14 +109,14 @@ export const AdminSidebar: React.FC = () => {
       </div>
 
       {/* Footer / Admin Profile */}
-      <div className="p-4 border-t border-[rgba(135,245,245,0.1)]">
-        <div className="mb-3 px-3 py-2 bg-[rgba(22,0,120,0.4)] rounded-xl border border-[rgba(135,245,245,0.12)]">
-          <div className="text-xs font-semibold text-[#FFE5F1] truncate">{user?.name || user?.email}</div>
-          <div className="text-[10px] font-mono text-[rgba(255,229,241,0.45)] truncate">{user?.email}</div>
+      <div className="p-4 border-t border-slate-800">
+        <div className="mb-3 px-3 py-2 bg-slate-900/80 rounded-lg border border-slate-800">
+          <div className="text-xs font-semibold text-slate-200 truncate">{user?.name || user?.email}</div>
+          <div className="text-[10px] text-slate-400 truncate">{user?.email}</div>
         </div>
         <button
           onClick={handleLogout}
-          className="w-full flex items-center justify-center gap-2 px-4 py-2 rounded-xl border border-red-500/30 text-red-400 hover:bg-red-500/10 text-xs font-semibold transition"
+          className="w-full flex items-center justify-center gap-2 px-3.5 py-2 rounded-lg border border-red-900/40 text-red-400 hover:bg-red-950/30 text-xs font-semibold transition"
         >
           <LogOut className="w-4 h-4" />
           Sign Out
@@ -129,17 +128,17 @@ export const AdminSidebar: React.FC = () => {
   return (
     <>
       {/* Mobile Top Navigation Header */}
-      <div className="lg:hidden sticky top-0 z-40 bg-[#010030] border-b border-[rgba(135,245,245,0.1)] px-4 py-3 flex items-center justify-between">
+      <div className="lg:hidden sticky top-0 z-40 bg-[#0B0F17] border-b border-slate-800 px-4 py-3 flex items-center justify-between">
         <div className="flex items-center gap-3">
           <img src="/svec_logo.png" alt="SVEC Logo" className="w-8 h-8 object-contain" />
           <div>
-            <span className="font-display font-bold text-[#FFE5F1] text-xs block">SVEC CLUB PORTAL</span>
-            <span className="font-mono text-[9px] text-[#87F5F5] block">ADMINISTRATION</span>
+            <span className="font-display font-bold text-slate-100 text-xs block">SVEC Club Portal</span>
+            <span className="text-[10px] text-indigo-400 font-semibold block">Administration</span>
           </div>
         </div>
         <button
           onClick={() => setMobileOpen(true)}
-          className="p-2 rounded-xl bg-[#160078]/60 border border-[rgba(135,245,245,0.15)] text-[#FFE5F1]"
+          className="p-2 rounded-lg bg-slate-900 border border-slate-800 text-slate-200"
         >
           <Menu className="w-5 h-5" />
         </button>
@@ -155,15 +154,15 @@ export const AdminSidebar: React.FC = () => {
 
       {/* Mobile Drawer */}
       <aside
-        className={`lg:hidden fixed top-0 left-0 bottom-0 z-50 w-72 bg-[#010030] border-r border-[rgba(135,245,245,0.1)] transition-transform duration-300 ${
+        className={`lg:hidden fixed top-0 left-0 bottom-0 z-50 w-72 bg-[#0B0F17] border-r border-slate-800 transition-transform duration-300 ${
           mobileOpen ? 'translate-x-0' : '-translate-x-full'
         }`}
       >
         {sidebarContent}
       </aside>
 
-      {/* Desktop Sidebar (Permanent Translucent) */}
-      <aside className="hidden lg:flex w-64 bg-[rgba(22,0,120,0.35)] text-[#FFE5F1] min-h-screen border-r border-[rgba(135,245,245,0.1)] flex-col shrink-0">
+      {/* Desktop Sidebar */}
+      <aside className="hidden lg:flex w-64 bg-[#0B0F17] text-slate-100 min-h-screen border-r border-slate-800 flex-col shrink-0">
         {sidebarContent}
       </aside>
     </>

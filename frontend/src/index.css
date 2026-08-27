@@ -3,121 +3,121 @@
 @tailwind utilities;
 
 :root {
-  --bg-primary: #010030;
-  --bg-secondary: #160078;
+  --bg-primary: #090D16;
+  --bg-surface: #0F172A;
+  --bg-surface-hover: #1E293B;
 
-  --accent: #7226FF;
-  --accent-secondary: #F042FF;
-  --accent-cyan: #87F5F5;
+  --accent: #6366F1;
+  --accent-hover: #4F46E5;
 
-  --text-primary: #FFE5F1;
-  --text-secondary: rgba(255, 229, 241, 0.68);
-  --text-muted: rgba(255, 229, 241, 0.45);
+  --text-primary: #F8FAFC;
+  --text-secondary: #94A3B8;
+  --text-muted: #64748B;
 
-  --surface: rgba(22, 0, 120, 0.28);
-  --surface-hover: rgba(114, 38, 255, 0.16);
-
-  --border: rgba(135, 245, 245, 0.14);
-  --border-hover: rgba(240, 66, 255, 0.45);
-
-  --shadow: rgba(1, 0, 48, 0.45);
+  --border: #1E293B;
+  --border-hover: #334155;
+  --border-active: #6366F1;
 }
 
 @layer base {
   body {
     background-color: var(--bg-primary);
     color: var(--text-primary);
-    font-family: 'Inter', system-ui, sans-serif;
+    font-family: 'Inter', system-ui, -apple-system, sans-serif;
     -webkit-tap-highlight-color: transparent;
     overflow-x: hidden;
   }
 
   h1, h2, h3, .font-display {
     font-family: 'Space Grotesk', 'Inter', system-ui, sans-serif;
+    letter-spacing: -0.02em;
   }
 
+  /* Standardize sans-serif for UI labels and mono overrides */
   .font-mono {
-    font-family: 'IBM Plex Mono', monospace;
+    font-family: 'Inter', system-ui, sans-serif;
   }
 }
 
-/* Atmospheric Layered Background */
+/* Flat, Near-Black Dark Background */
 .portal-bg {
   background-color: var(--bg-primary);
-  background-image:
-    radial-gradient(circle at 75% 10%, rgba(114, 38, 255, 0.22), transparent 35%),
-    radial-gradient(circle at 15% 45%, rgba(240, 66, 255, 0.08), transparent 30%),
-    radial-gradient(rgba(135, 245, 245, 0.04) 1px, transparent 1px);
-  background-size: 100% 100%, 100% 100%, 24px 24px;
+  background-image: radial-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px);
+  background-size: 32px 32px;
 }
 
-/* Translucent Glass Panel & Card Utilities */
+/* Translucent Surface & Panel Utilities (No Neon Glows) */
 .glass-panel {
-  background: rgba(22, 0, 120, 0.35);
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
+  background: rgba(15, 23, 42, 0.80);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
   border: 1px solid var(--border);
 }
 
 .glass-card {
-  background: rgba(22, 0, 120, 0.38);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
+  background: rgba(15, 23, 42, 0.65);
   border: 1px solid var(--border);
-  box-shadow: 0 12px 30px var(--shadow);
-  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+  transition: border-color 0.15s ease, background-color 0.15s ease, transform 0.15s ease;
 }
 
 .glass-card:hover {
-  background: var(--surface-hover);
+  background: rgba(30, 41, 59, 0.75);
   border-color: var(--border-hover);
-  transform: translateY(-3px);
-  box-shadow: 0 16px 36px var(--shadow), 0 0 28px rgba(114, 38, 255, 0.16);
-}
-
-/* Buttons */
-.btn-primary-gradient {
-  background: linear-gradient(135deg, var(--accent) 0%, var(--accent-secondary) 100%);
-  color: var(--text-primary);
-  box-shadow: 0 0 20px -2px rgba(240, 66, 255, 0.35);
-  transition: all 0.2s ease-out;
-}
-
-.btn-primary-gradient:hover {
-  filter: brightness(1.12);
   transform: translateY(-2px);
-  box-shadow: 0 0 28px -1px rgba(240, 66, 255, 0.50);
 }
 
-.btn-primary-gradient:active {
+/* Reserved Warm Accent Gradient ONLY for Featured Showcase Hero Card */
+.featured-warm-accent {
+  background: linear-gradient(135deg, rgba(245, 158, 11, 0.12) 0%, rgba(99, 102, 241, 0.18) 100%);
+  border: 1px solid rgba(245, 158, 11, 0.25);
+}
+
+/* Primary Button (Solid Accent - No Gradient Glow) */
+.btn-primary-gradient,
+.btn-primary {
+  background-color: var(--accent);
+  color: #FFFFFF;
+  font-weight: 600;
+  border-radius: 0.75rem;
+  transition: background-color 0.15s ease, transform 0.15s ease;
+}
+
+.btn-primary-gradient:hover,
+.btn-primary:hover {
+  background-color: var(--accent-hover);
+  transform: translateY(-1px);
+}
+
+.btn-primary-gradient:active,
+.btn-primary:active {
   transform: translateY(0px) scale(0.98);
 }
 
 .btn-secondary-translucent {
-  background: rgba(22, 0, 120, 0.40);
+  background: rgba(15, 23, 42, 0.80);
   border: 1px solid var(--border);
   color: var(--text-primary);
-  transition: all 0.2s ease;
+  transition: border-color 0.15s ease, background-color 0.15s ease;
 }
 
 .btn-secondary-translucent:hover {
-  border-color: var(--accent-secondary);
-  color: #white;
-  background: rgba(114, 38, 255, 0.16);
+  border-color: var(--border-hover);
+  background: rgba(30, 41, 59, 0.90);
 }
 
 /* Custom Input Styling */
 .admin-input {
-  background: rgba(1, 0, 48, 0.65);
+  background: rgba(15, 23, 42, 0.90);
   border: 1px solid var(--border);
   color: var(--text-primary);
-  transition: all 0.2s ease;
+  border-radius: 0.75rem;
+  transition: border-color 0.15s ease, ring 0.15s ease;
 }
 
 .admin-input:focus {
   outline: none;
   border-color: var(--accent);
-  box-shadow: 0 0 0 3px rgba(114, 38, 255, 0.15);
+  box-shadow: 0 0 0 2px rgba(99, 102, 241, 0.25);
 }
 
 /* Table styling */
@@ -128,9 +128,8 @@
 }
 
 .admin-table th {
-  background: rgba(1, 0, 48, 0.75);
+  background: rgba(15, 23, 42, 0.95);
   color: var(--text-muted);
-  font-family: 'IBM Plex Mono', monospace;
   font-size: 11px;
   font-weight: 600;
   text-transform: uppercase;
@@ -141,13 +140,13 @@
 
 .admin-table td {
   padding: 14px 16px;
-  border-bottom: 1px solid rgba(135, 245, 245, 0.08);
+  border-bottom: 1px solid var(--border);
   font-size: 13px;
   color: var(--text-primary);
 }
 
 .admin-table tr:hover td {
-  background: rgba(114, 38, 255, 0.08);
+  background: rgba(30, 41, 59, 0.50);
 }
 
 /* No Scrollbar Utility */
