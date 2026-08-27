@@ -43,7 +43,7 @@ export const HomePage: React.FC = () => {
       {/* Hero Section */}
       <section className="relative py-8 sm:py-12 px-4 sm:px-8 lg:px-12 border-b border-slate-800/80 overflow-hidden bg-[#090D16]">
         
-        {/* DESKTOP BACKGROUND VIDEO */}
+        {/* DESKTOP BACKGROUND VIDEO (Substantially visible background visual) */}
         {!videoError && (
           <video
             autoPlay
@@ -52,17 +52,17 @@ export const HomePage: React.FC = () => {
             playsInline
             preload="metadata"
             onError={() => setVideoError(true)}
-            className="hidden lg:block absolute inset-0 w-full h-full object-cover z-0 opacity-50 pointer-events-none transition-opacity duration-1000"
+            className="hidden lg:block absolute inset-0 w-full h-full object-cover z-0 opacity-80 pointer-events-none transition-opacity duration-1000"
           >
             <source src={HERO_VIDEO_PATH} type="video/mp4" />
           </video>
         )}
 
-        {/* DESKTOP DARK OVERLAY */}
+        {/* DESKTOP LIGHTER OVERLAY FOR CLEAR VIDEO VISIBILITY */}
         <div
           className="hidden lg:block absolute inset-0 z-0 pointer-events-none"
           style={{
-            background: 'linear-gradient(90deg, rgba(9, 13, 22, 0.85) 0%, rgba(15, 23, 42, 0.55) 50%, rgba(9, 13, 22, 0.80) 100%)',
+            background: 'linear-gradient(90deg, rgba(9, 13, 22, 0.65) 0%, rgba(15, 23, 42, 0.35) 50%, rgba(9, 13, 22, 0.60) 100%)',
           }}
         />
 
@@ -73,7 +73,7 @@ export const HomePage: React.FC = () => {
           <div className="lg:col-span-7 space-y-4 sm:space-y-6">
             
             {/* MOBILE VIDEO ZONE */}
-            <div className="lg:hidden relative p-5 sm:p-6 rounded-2xl overflow-hidden border border-slate-800 bg-slate-900/90 shadow-xl">
+            <div className="lg:hidden relative p-5 sm:p-6 rounded-2xl overflow-hidden border border-slate-800 bg-slate-900/80 shadow-xl">
               {!videoError && (
                 <video
                   autoPlay
@@ -82,12 +82,12 @@ export const HomePage: React.FC = () => {
                   playsInline
                   preload="metadata"
                   onError={() => setVideoError(true)}
-                  className="absolute inset-0 w-full h-full object-cover z-0 opacity-45 pointer-events-none"
+                  className="absolute inset-0 w-full h-full object-cover z-0 opacity-75 pointer-events-none"
                 >
                   <source src={HERO_VIDEO_PATH} type="video/mp4" />
                 </video>
               )}
-              <div className="absolute inset-0 bg-gradient-to-r from-slate-950/85 via-slate-900/65 to-slate-950/80 z-0 pointer-events-none" />
+              <div className="absolute inset-0 bg-gradient-to-r from-slate-950/65 via-slate-900/40 to-slate-950/60 z-0 pointer-events-none" />
 
               <div className="relative z-10 space-y-3">
                 <div className="flex items-center gap-2">
@@ -149,7 +149,7 @@ export const HomePage: React.FC = () => {
       </section>
 
       {/* Main Clubs Grid Section */}
-      <section className="max-w-[1600px] mx-auto px-4 sm:px-8 lg:px-12 py-8 sm:py-12">
+      <section className="max-w-[1600px] mx-auto px-4 sm:px-8 lg:px-12 pt-8 sm:pt-12 pb-0">
         <div className="flex items-center justify-between mb-6 pb-3 border-b border-slate-800/80">
           <div>
             <h2 className="font-display font-bold text-xl sm:text-2xl text-slate-100">

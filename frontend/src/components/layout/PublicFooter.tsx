@@ -12,7 +12,7 @@ export const PublicFooter: React.FC = () => {
   const WEBSITE_URL = "https://srivasaviengg.ac.in/";
 
   return (
-    <footer className="w-full bg-[#090D16] border-t border-slate-800/80 py-5 sm:py-7 px-4 sm:px-8 mt-4 sm:mt-6 text-slate-400">
+    <footer className="w-full bg-[#090D16] border-t border-slate-800/80 py-5 sm:py-7 px-4 sm:px-8 mt-0 text-slate-400">
       <div className="w-full max-w-[1600px] mx-auto space-y-4">
         {/* Desktop Layout */}
         <div className="hidden sm:flex items-center justify-between gap-6 pb-4 border-b border-slate-800/80">

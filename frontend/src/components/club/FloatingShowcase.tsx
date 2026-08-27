@@ -139,11 +139,8 @@ export const FloatingShowcase: React.FC<FloatingShowcaseProps> = ({ clubs = [] }
 
           <div className="absolute inset-0 bg-gradient-to-t from-slate-900 via-transparent to-transparent opacity-60 pointer-events-none" />
 
-          {/* Top Left Badge */}
-          <div className="absolute top-3 left-3 z-10 flex items-center gap-2">
-            <span className="px-2.5 py-0.5 rounded-md bg-indigo-600 text-white text-[10px] font-semibold tracking-wider uppercase shadow-sm">
-              Spotlight
-            </span>
+          {/* Top Left Category Badge (Spotlight label removed to reclaim vertical space) */}
+          <div className="absolute top-3 left-3 z-10">
             <span className="px-2.5 py-0.5 rounded-md bg-slate-950/80 border border-slate-800 text-slate-300 text-[10px] font-semibold uppercase tracking-wider backdrop-blur-md">
               {accent.categoryLabel}
             </span>
