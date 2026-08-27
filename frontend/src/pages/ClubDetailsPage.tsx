@@ -64,7 +64,7 @@ export const ClubDetailsPage: React.FC = () => {
   const singleDetailImage = getLogoUrl(club.logo || club.banner);
 
   return (
-    <div className="portal-bg min-h-screen py-6 sm:py-10 px-4 sm:px-8 relative pb-28">
+    <div className="portal-bg min-h-screen py-6 sm:py-10 px-4 sm:px-8 relative pb-12">
       <div className="max-w-3xl mx-auto space-y-5">
         {/* Navigation Breadcrumb */}
         <button
@@ -172,7 +172,7 @@ export const ClubDetailsPage: React.FC = () => {
                       ) : (
                         <>
                           <Check className="w-4 h-4 stroke-[3]" />
-                          ✓ Selected for Registration
+                          Selected for Registration
                         </>
                       )
                     ) : (

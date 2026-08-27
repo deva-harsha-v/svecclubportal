@@ -237,6 +237,28 @@ def admin_deactivate_club(
     return {"status": "success", "message": f"Club '{club.name}' has been deactivated."}
 
 
+@router.delete("/clubs/{slug}/permanent")
+def admin_delete_club_permanent(
+    slug: str,
+    request: Request,
+    staff: StaffProfile = Depends(require_admin),
+    db: Session = Depends(get_db),
+):
+    """Permanently deletes a club and its associated registrations and leads."""
+    club = db.query(Club).filter(Club.slug == slug.lower()).first()
+    if not club:
+        raise HTTPException(status_code=404, detail="Club not found.")
+
+    club_name = club.name
+    db.query(Registration).filter(Registration.club_id == club.id).delete()
+    db.query(ClubLead).filter(ClubLead.club_id == club.id).delete()
+    db.delete(club)
+    db.commit()
+
+    _log_audit(db, staff, "CLUB_PERMANENTLY_DELETED", f"Permanently deleted club '{club_name}' ({slug})", request.client.host if request.client else None)
+    return {"status": "success", "message": f"Club '{club_name}' permanently deleted."}
+
+
 @router.post("/clubs/{slug}/logo")
 def admin_upload_logo(
     slug: str,

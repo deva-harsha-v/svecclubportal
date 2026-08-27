@@ -112,6 +112,11 @@ export const api = {
       method: 'DELETE',
     }),
 
+  deleteClubPermanent: (slug: string) =>
+    request<{ status: string; message: string }>(`/api/admin/clubs/${slug}/permanent`, {
+      method: 'DELETE',
+    }),
+
   uploadLogo: async (slug: string, file: File): Promise<{ logo_url: string }> => {
     const formData = new FormData();
     formData.append('file', file);

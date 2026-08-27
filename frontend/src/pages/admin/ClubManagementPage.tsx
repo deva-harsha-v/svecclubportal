@@ -1,9 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Plus, Edit2, Power, CheckCircle, XCircle, Search } from 'lucide-react';
+import { Plus, Edit2, Power, CheckCircle, XCircle, Search, Trash2, AlertTriangle } from 'lucide-react';
 import { api } from '../../services/api';
 import { ClubDetail } from '../../types';
 import { LoadingSpinner } from '../../components/ui/LoadingSpinner';
+import { getClubAccent } from '../../utils/categoryIcons';
+import { getLogoUrl } from '../../utils/logoHelper';
 
 export const ClubManagementPage: React.FC = () => {
   const navigate = useNavigate();
@@ -11,6 +13,10 @@ export const ClubManagementPage: React.FC = () => {
   const [search, setSearch] = useState('');
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+
+  // Permanent Delete Modal state
+  const [clubToDelete, setClubToDelete] = useState<ClubDetail | null>(null);
+  const [deleting, setDeleting] = useState(false);
 
   useEffect(() => {
     fetchClubs();
@@ -41,15 +47,17 @@ export const ClubManagementPage: React.FC = () => {
     }
   };
 
-  const handleDeactivate = async (slug: string, name: string) => {
-    if (!window.confirm(`Deactivate club "${name}"? It will be hidden from public view while preserving historical registration data.`)) {
-      return;
-    }
+  const handleConfirmPermanentDelete = async () => {
+    if (!clubToDelete) return;
+    setDeleting(true);
     try {
-      await api.deactivateClub(slug);
-      fetchClubs();
+      await api.deleteClubPermanent(clubToDelete.slug);
+      setClubs(clubs.filter((c) => c.slug !== clubToDelete.slug));
+      setClubToDelete(null);
     } catch (err: any) {
-      alert(err.message || 'Failed to deactivate club.');
+      alert(err.message || 'Failed to delete club.');
+    } finally {
+      setDeleting(false);
     }
   };
 
@@ -62,136 +70,194 @@ export const ClubManagementPage: React.FC = () => {
 
   return (
     <div className="space-y-6">
+      {/* Page Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h1 className="font-display font-bold text-2xl text-[#FFE5F1]">Club Management</h1>
-          <p className="text-xs text-[rgba(255,229,241,0.68)] font-mono mt-0.5">
-            Add, edit, open/close registrations, or deactivate clubs dynamically
+          <h1 className="font-display font-bold text-2xl text-slate-100">Club Management</h1>
+          <p className="text-xs text-slate-400 mt-0.5">
+            Manage student club modules, toggle registration status, edit media, or permanently remove clubs.
           </p>
         </div>
 
         <button
           onClick={() => navigate('/admin/clubs/new')}
-          className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full btn-primary-gradient text-[#FFE5F1] font-bold text-xs shadow-magentaGlow transition"
+          className="inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white font-semibold text-xs shadow-sm transition"
         >
           <Plus className="w-4 h-4" />
           Create New Club
         </button>
       </div>
 
-      {/* Search */}
-      <div className="relative max-w-sm">
-        <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-[rgba(255,229,241,0.45)]" />
+      {/* Search Bar */}
+      <div className="relative max-w-md">
+        <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500" />
         <input
           type="text"
-          placeholder="Filter clubs by name or slug..."
+          placeholder="Search modules by name, slug, or category..."
           value={search}
           onChange={(e) => setSearch(e.target.value)}
-          className="w-full pl-10 pr-4 py-2.5 rounded-xl bg-[#010030]/80 border border-[#7226FF]/35 text-[#FFE5F1] placeholder:text-[rgba(255,229,241,0.4)] text-xs focus:outline-none focus:border-[#F042FF]"
+          className="w-full pl-10 pr-4 py-2.5 rounded-xl bg-slate-900 border border-slate-800 text-slate-100 placeholder:text-slate-500 text-xs focus:outline-none focus:border-indigo-500 transition"
         />
       </div>
 
-      {error && <div className="p-4 rounded-xl bg-red-500/10 border border-red-500/30 text-red-400 text-xs">{error}</div>}
+      {error && <div className="p-4 rounded-xl bg-red-950/40 border border-red-800/60 text-red-300 text-xs">{error}</div>}
 
       {loading ? (
-        <LoadingSpinner label="Loading clubs list..." />
+        <LoadingSpinner label="Loading club modules..." />
+      ) : filteredClubs.length === 0 ? (
+        <div className="text-center py-16 bg-slate-900 border border-slate-800 rounded-2xl">
+          <p className="text-slate-300 font-medium">No matching club modules found.</p>
+        </div>
       ) : (
-        <div className="glass-panel rounded-3xl border border-[#7226FF]/35 bg-[#160078]/60 shadow-2xl overflow-hidden">
-          <div className="overflow-x-auto">
-            <table className="admin-table">
-              <thead>
-                <tr>
-                  <th>Club Name & Slug</th>
-                  <th>Category</th>
-                  <th>Registrations</th>
-                  <th>Reg Status</th>
-                  <th>Active Status</th>
-                  <th className="text-right">Actions</th>
-                </tr>
-              </thead>
-              <tbody>
-                {filteredClubs.map((club) => (
-                  <tr key={club.slug} className={!club.is_active ? 'opacity-50' : ''}>
-                    <td>
-                      <div className="flex items-center gap-3">
-                        <div className="w-9 h-9 rounded-xl bg-[#010030] border border-[#7226FF]/30 flex items-center justify-center text-sm overflow-hidden shrink-0">
-                          {club.logo && club.logo.startsWith('http') ? (
-                            <img src={club.logo} alt={club.name} className="w-full h-full object-cover" />
-                          ) : (
-                            <span className="font-mono text-[#87F5F5]">⌘</span>
-                          )}
-                        </div>
-                        <div>
-                          <div className="font-bold text-[#FFE5F1] text-sm">{club.name}</div>
-                          <div className="font-mono text-[10px] text-[rgba(255,229,241,0.6)]">/clubs/{club.slug}</div>
-                        </div>
-                      </div>
-                    </td>
-                    <td>
-                      <span className="font-mono text-[10px] font-semibold text-[#87F5F5] bg-[#87F5F5]/10 border border-[#87F5F5]/25 px-2.5 py-0.5 rounded-full">
-                        {club.category}
-                      </span>
-                    </td>
-                    <td className="font-mono font-bold text-[#87F5F5]">
-                      {club.registration_count || 0}
-                    </td>
-                    <td>
-                      <button
-                        onClick={() => handleToggleRegistration(club)}
-                        className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full font-mono text-[10px] font-semibold transition ${
-                          club.registration_open
-                            ? 'bg-[#87F5F5]/15 text-[#87F5F5] border border-[#87F5F5]/30'
-                            : 'bg-red-500/15 text-red-400 border border-red-500/30'
-                        }`}
-                      >
-                        {club.registration_open ? (
-                          <>
-                            <CheckCircle className="w-3 h-3" />
-                            Open
-                          </>
-                        ) : (
-                          <>
-                            <XCircle className="w-3 h-3" />
-                            Closed
-                          </>
-                        )}
-                      </button>
-                    </td>
-                    <td>
-                      <span
-                        className={`inline-flex items-center gap-1 font-mono text-[10px] font-semibold px-2.5 py-0.5 rounded-full ${
-                          club.is_active
-                            ? 'text-emerald-400 bg-emerald-500/10 border border-emerald-500/30'
-                            : 'text-amber-400 bg-amber-500/10 border border-amber-500/30'
-                        }`}
-                      >
-                        {club.is_active ? 'Active' : 'Deactivated'}
-                      </span>
-                    </td>
-                    <td className="text-right">
-                      <div className="flex items-center justify-end gap-2">
-                        <button
-                          onClick={() => navigate(`/admin/clubs/${club.slug}/edit`)}
-                          className="p-1.5 rounded-lg bg-[#010030] border border-[#7226FF]/35 text-[#87F5F5] hover:border-[#F042FF] transition"
-                          title="Edit Club"
-                        >
-                          <Edit2 className="w-3.5 h-3.5" />
-                        </button>
-                        {club.is_active && (
-                          <button
-                            onClick={() => handleDeactivate(club.slug, club.name)}
-                            className="p-1.5 rounded-lg bg-red-500/10 border border-red-500/30 text-red-400 hover:bg-red-500/20 transition"
-                            title="Deactivate Club"
-                          >
-                            <Power className="w-3.5 h-3.5" />
-                          </button>
-                        )}
-                      </div>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
+        /* Module / Card Grid (Replaces traditional table) */
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+          {filteredClubs.map((club) => {
+            const accent = getClubAccent(club.category, club.name);
+            const logoUrl = getLogoUrl(club.logo);
+
+            return (
+              <div
+                key={club.slug}
+                className={`bg-slate-900 border rounded-2xl p-5 shadow-lg flex flex-col justify-between space-y-4 transition ${
+                  club.is_active ? 'border-slate-800 hover:border-slate-700' : 'border-slate-800/50 opacity-60'
+                }`}
+              >
+                {/* Module Header: Logo + Title + Slug */}
+                <div className="flex items-start gap-3">
+                  {/* Direct Transparent Logo Rendering (No extra circular frame or container background) */}
+                  {logoUrl ? (
+                    <img
+                      src={logoUrl}
+                      alt={club.name}
+                      className="w-10 h-10 object-contain shrink-0"
+                    />
+                  ) : (
+                    <div className="w-10 h-10 text-indigo-400 shrink-0 flex items-center justify-center">
+                      {accent.icon}
+                    </div>
+                  )}
+
+                  <div className="min-w-0 flex-1">
+                    <h3 className="font-display font-bold text-base text-slate-100 truncate">
+                      {club.name}
+                    </h3>
+                    <div className="text-[11px] text-slate-400 truncate">
+                      /clubs/{club.slug}
+                    </div>
+                  </div>
+                </div>
+
+                {/* Module Metadata Badges */}
+                <div className="flex flex-wrap items-center gap-2 pt-2 border-t border-slate-800/80">
+                  <span className="text-[10px] font-semibold uppercase tracking-wider text-indigo-400 bg-indigo-950/40 border border-indigo-800/40 px-2 py-0.5 rounded-md">
+                    {club.category}
+                  </span>
+
+                  <span className="text-[10px] font-semibold px-2 py-0.5 rounded-md bg-slate-800 text-slate-300 border border-slate-700">
+                    {club.registration_count || 0} Registrations
+                  </span>
+
+                  <span
+                    className={`text-[10px] font-semibold px-2 py-0.5 rounded-md border ${
+                      club.registration_open
+                        ? 'text-emerald-400 bg-emerald-950/40 border-emerald-800/40'
+                        : 'text-amber-400 bg-amber-950/40 border-amber-800/40'
+                    }`}
+                  >
+                    {club.registration_open ? 'Open' : 'Closed'}
+                  </span>
+                </div>
+
+                {/* Module Compact Actions Row */}
+                <div className="pt-3 border-t border-slate-800/80 flex items-center justify-between gap-2">
+                  <div className="flex items-center gap-2">
+                    {/* Edit Button */}
+                    <button
+                      onClick={() => navigate(`/admin/clubs/${club.slug}/edit`)}
+                      className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-slate-800 border border-slate-700 text-slate-200 hover:bg-slate-700 text-xs font-semibold transition"
+                      title="Edit Club Details"
+                    >
+                      <Edit2 className="w-3.5 h-3.5 text-indigo-400" />
+                      <span>Edit</span>
+                    </button>
+
+                    {/* Registration Toggle Button */}
+                    <button
+                      onClick={() => handleToggleRegistration(club)}
+                      className={`inline-flex items-center gap-1 px-2.5 py-1.5 rounded-lg text-xs font-semibold border transition ${
+                        club.registration_open
+                          ? 'bg-emerald-950/30 border-emerald-800/50 text-emerald-300 hover:bg-emerald-900/40'
+                          : 'bg-amber-950/30 border-amber-800/50 text-amber-300 hover:bg-amber-900/40'
+                      }`}
+                      title={club.registration_open ? 'Close Registrations' : 'Open Registrations'}
+                    >
+                      {club.registration_open ? (
+                        <>
+                          <CheckCircle className="w-3.5 h-3.5" />
+                          <span>Reg Open</span>
+                        </>
+                      ) : (
+                        <>
+                          <XCircle className="w-3.5 h-3.5" />
+                          <span>Reg Closed</span>
+                        </>
+                      )}
+                    </button>
+                  </div>
+
+                  {/* Permanent Delete Button */}
+                  <button
+                    onClick={() => setClubToDelete(club)}
+                    className="p-1.5 rounded-lg bg-red-950/40 border border-red-800/60 text-red-400 hover:bg-red-900/60 transition"
+                    title="Permanently Delete Club"
+                  >
+                    <Trash2 className="w-4 h-4" />
+                  </button>
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      )}
+
+      {/* Permanent Delete Confirmation Modal */}
+      {clubToDelete && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm animate-fadeIn">
+          <div className="max-w-md w-full bg-slate-900 border border-slate-800 rounded-2xl p-6 shadow-2xl space-y-4">
+            <div className="flex items-center gap-3 text-red-400">
+              <div className="w-10 h-10 rounded-full bg-red-950/80 border border-red-800/60 flex items-center justify-center shrink-0">
+                <AlertTriangle className="w-5 h-5 text-red-400" />
+              </div>
+              <div>
+                <h3 className="font-display font-bold text-lg text-slate-100">Permanently Delete Club?</h3>
+                <p className="text-xs text-red-400 font-medium">Destructive Action — Irreversible</p>
+              </div>
+            </div>
+
+            <p className="text-xs text-slate-300 leading-relaxed">
+              Are you sure you want to permanently delete <strong className="text-white">"{clubToDelete.name}"</strong>?
+              This will permanently remove the club module, its media assets, and all associated registration records from the database.
+            </p>
+
+            <div className="pt-3 border-t border-slate-800 flex items-center justify-end gap-3">
+              <button
+                type="button"
+                disabled={deleting}
+                onClick={() => setClubToDelete(null)}
+                className="px-4 py-2 rounded-xl border border-slate-800 text-xs font-semibold text-slate-300 hover:bg-slate-800 transition"
+              >
+                Cancel
+              </button>
+              <button
+                type="button"
+                disabled={deleting}
+                onClick={handleConfirmPermanentDelete}
+                className="inline-flex items-center gap-1.5 px-5 py-2 rounded-xl bg-red-600 hover:bg-red-500 text-white font-semibold text-xs transition shadow-sm"
+              >
+                <Trash2 className="w-4 h-4" />
+                <span>{deleting ? 'Deleting...' : 'Delete Permanently'}</span>
+              </button>
+            </div>
           </div>
         </div>
       )}
