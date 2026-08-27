@@ -1,12 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { ArrowLeft, Check, Instagram, Linkedin, Globe, Heart } from 'lucide-react';
+import { ArrowLeft, Check, Instagram, Linkedin, Globe, Heart, Trash2 } from 'lucide-react';
 import { api } from '../services/api';
 import { ClubDetail } from '../types';
 import { LoadingSpinner } from '../components/ui/LoadingSpinner';
 import { useClubSelection } from '../hooks/useClubSelection';
 import { getClubAccent } from '../utils/categoryIcons';
 import { getLogoUrl } from '../utils/logoHelper';
+import { SelectionTray } from '../components/club/SelectionTray';
 
 export const ClubDetailsPage: React.FC = () => {
   const { slug } = useParams<{ slug: string }>();
@@ -16,8 +17,9 @@ export const ClubDetailsPage: React.FC = () => {
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
   const [isLiked, setIsLiked] = useState<boolean>(false);
+  const [btnHover, setBtnHover] = useState<boolean>(false);
 
-  const { isSelected, toggleClub } = useClubSelection();
+  const { selectedClubs, toggleClub, isSelected, removeClub, clearSelection } = useClubSelection();
 
   useEffect(() => {
     if (slug) fetchClubDetail(slug);
@@ -59,7 +61,7 @@ export const ClubDetailsPage: React.FC = () => {
   const selected = isSelected(club.slug);
 
   return (
-    <div className="portal-bg min-h-screen py-6 sm:py-10 px-4 sm:px-8">
+    <div className="portal-bg min-h-screen py-6 sm:py-10 px-4 sm:px-8 relative pb-28">
       <div className="max-w-4xl mx-auto space-y-6">
         {/* Navigation Breadcrumb */}
         <button
@@ -123,7 +125,7 @@ export const ClubDetailsPage: React.FC = () => {
             </div>
           </div>
 
-          {/* 2. CLUB IDENTITY & PRIMARY JOIN CTA */}
+          {/* 2. CLUB IDENTITY & PRIMARY JOIN CTA WITH INLINE FEEDBACK */}
           <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-6 pb-6 border-b border-slate-800">
             <div>
               <h1 className="font-display font-bold text-2xl sm:text-3xl text-slate-100">
@@ -136,8 +138,8 @@ export const ClubDetailsPage: React.FC = () => {
               )}
             </div>
 
-            {/* Join Button */}
-            <div className="w-full sm:w-auto shrink-0">
+            {/* Join Button with Clear Inline Feedback */}
+            <div className="w-full sm:w-auto shrink-0 flex flex-col items-end gap-1.5">
               {!club.registration_open ? (
                 <span className="w-full sm:w-auto inline-flex items-center justify-center px-6 py-2.5 rounded-lg bg-slate-800 border border-slate-700 text-slate-400 font-semibold text-xs uppercase tracking-wider">
                   Registration Closed
@@ -145,21 +147,39 @@ export const ClubDetailsPage: React.FC = () => {
               ) : (
                 <button
                   onClick={() => toggleClub(club)}
-                  className={`w-full sm:w-auto inline-flex items-center justify-center gap-2 px-6 py-2.5 rounded-lg font-semibold text-sm transition ${
+                  onMouseEnter={() => setBtnHover(true)}
+                  onMouseLeave={() => setBtnHover(false)}
+                  className={`w-full sm:w-auto inline-flex items-center justify-center gap-2 px-6 py-3 rounded-lg font-semibold text-sm transition-all duration-150 ${
                     selected
-                      ? 'bg-emerald-600 text-white'
-                      : 'bg-indigo-600 hover:bg-indigo-500 text-white'
+                      ? btnHover
+                        ? 'bg-red-600 text-white border border-red-500 shadow-sm'
+                        : 'bg-emerald-600 text-white border border-emerald-500 shadow-sm'
+                      : 'bg-indigo-600 hover:bg-indigo-500 text-white shadow-sm'
                   }`}
                 >
                   {selected ? (
-                    <>
-                      <Check className="w-4 h-4 stroke-[3]" />
-                      Selected for Registration
-                    </>
+                    btnHover ? (
+                      <>
+                        <Trash2 className="w-4 h-4" />
+                        Remove from Selection
+                      </>
+                    ) : (
+                      <>
+                        <Check className="w-4 h-4 stroke-[3]" />
+                        ✓ Selected for Registration
+                      </>
+                    )
                   ) : (
                     '+ Select This Club'
                   )}
                 </button>
+              )}
+
+              {selected && club.registration_open && (
+                <span className="text-[11px] font-medium text-emerald-400 flex items-center gap-1">
+                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-400" />
+                  Added to registration cart below
+                </span>
               )}
             </div>
           </div>
@@ -273,6 +293,13 @@ export const ClubDetailsPage: React.FC = () => {
           </div>
         </div>
       </div>
+
+      {/* Persistent Selection Tray Bar on Club Details Page (E-commerce cart feedback) */}
+      <SelectionTray
+        selectedClubs={selectedClubs}
+        onRemoveClub={removeClub}
+        onClear={clearSelection}
+      />
     </div>
   );
 };
