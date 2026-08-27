@@ -23,9 +23,10 @@ export const ClubCard: React.FC<ClubCardProps> = ({
     navigate(`/clubs/${club.slug}`);
   };
 
-  // 3:4 Portrait image asset (banner photo or fallback)
-  const portraitImageUrl = getLogoUrl(club.banner || club.logo);
-  // Transparent logo asset
+  // 1. Main image for homepage regular card: LANDSCAPE COVER IMAGE (club.banner, fallback to detail/logo)
+  const landscapeCoverUrl = getLogoUrl(club.banner || club.detail_image || club.logo);
+  
+  // 2. Transparent logo asset: raw background-removed PNG logo
   const logoUrl = getLogoUrl(club.logo);
 
   return (
@@ -37,11 +38,11 @@ export const ClubCard: React.FC<ClubCardProps> = ({
           : 'border-slate-800 hover:border-slate-700 hover:shadow-lg'
       }`}
     >
-      {/* 1. 3:4 PORTRAIT CLUB IMAGE AREA */}
-      <div className="relative w-full aspect-[3/4] max-h-56 sm:max-h-60 bg-slate-950 overflow-hidden shrink-0">
-        {portraitImageUrl ? (
+      {/* 1. LANDSCAPE COVER IMAGE HEADER (Main dominant visual on homepage) */}
+      <div className="relative w-full h-48 sm:h-52 aspect-[3072/1560] bg-slate-950 overflow-hidden shrink-0">
+        {landscapeCoverUrl ? (
           <img
-            src={portraitImageUrl}
+            src={landscapeCoverUrl}
             alt={club.name}
             className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300 ease-out"
           />
@@ -53,16 +54,16 @@ export const ClubCard: React.FC<ClubCardProps> = ({
           </div>
         )}
 
-        {/* Subtle scrim overlay at bottom for contrast */}
+        {/* Scrim gradient overlay for high logo/text contrast */}
         <div className="absolute inset-0 bg-gradient-to-t from-slate-900 via-transparent to-transparent opacity-60 pointer-events-none" />
 
-        {/* TRANSPARENT CLUB LOGO (Clean floating logo with NO container box, borders, or background) */}
+        {/* TRANSPARENT CLUB LOGO OVERLAY (Raw logo ONLY — NO container box, NO borders, NO background, NO frame) */}
         {logoUrl && (
-          <div className="absolute bottom-3 left-3 z-10">
+          <div className="absolute bottom-3 left-3 z-10 flex items-center gap-2">
             <img
               src={logoUrl}
               alt={`${club.name} Logo`}
-              className="w-8 h-8 sm:w-9 sm:h-9 object-contain drop-shadow-md shrink-0"
+              className="w-8 h-8 sm:w-9 sm:h-9 object-contain drop-shadow-md shrink-0 pointer-events-none"
             />
           </div>
         )}
@@ -95,7 +96,7 @@ export const ClubCard: React.FC<ClubCardProps> = ({
         )}
       </div>
 
-      {/* 2. INFORMATION SECTION (SOLID DARK SLATE SURFACE) */}
+      {/* 2. INFORMATION SECTION */}
       <div className="p-4 sm:p-5 flex flex-col justify-between flex-1">
         <div>
           {/* Club Name */}

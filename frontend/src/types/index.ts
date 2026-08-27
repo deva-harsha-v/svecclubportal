@@ -14,6 +14,7 @@ export interface ClubSummary {
   tagline?: string;
   logo?: string;
   banner?: string;
+  detail_image?: string;
   registration_open: boolean;
   is_active: boolean;
 }
@@ -28,6 +29,7 @@ export interface ClubDetail {
   domains: string[];
   logo?: string;
   banner?: string;
+  detail_image?: string;
   faculty_coordinator?: string;
   instagram?: string;
   linkedin?: string;

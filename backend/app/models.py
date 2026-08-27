@@ -40,7 +40,8 @@ class Club(Base):
     what_we_do = Column(JSON, default=list)             # list[str] of activities
     domains = Column(JSON, default=list)                # list[str] interests/tags
     logo = Column(Text, nullable=True)           # emoji, glyph, image URL, or Base64 data URL
-    banner = Column(Text, nullable=True)         # Banner / Cover Image URL or Base64 data URL
+    banner = Column(Text, nullable=True)         # Banner / Cover Image URL or Base64 data URL (3072x1560 Landscape)
+    detail_image = Column(Text, nullable=True)   # Detail Profile Image URL or Base64 data URL (3:4 Portrait)
     faculty_coordinator = Column(String(160), nullable=True)
     instagram = Column(String(300), nullable=True)
     linkedin = Column(String(300), nullable=True)

@@ -39,6 +39,15 @@ def on_startup():
     # Creates tables if they don't exist
     Base.metadata.create_all(bind=engine)
 
+    # Auto-migrate missing columns for PostgreSQL/SQLite
+    try:
+        from sqlalchemy import text
+        with engine.connect() as conn:
+            conn.execute(text("ALTER TABLE clubs ADD COLUMN IF NOT EXISTS detail_image TEXT;"))
+            conn.commit()
+    except Exception as e:
+        logger.warning(f"Column migration info: {e}")
+
     db = SessionLocal()
     try:
         # Guarantee initial admin StaffProfile exists

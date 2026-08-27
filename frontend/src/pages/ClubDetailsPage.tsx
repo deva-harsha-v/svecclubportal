@@ -1,13 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { ArrowLeft, Check, Instagram, Linkedin, Globe, Heart, Trash2 } from 'lucide-react';
+import { ArrowLeft, Check, Heart, Trash2 } from 'lucide-react';
 import { api } from '../services/api';
 import { ClubDetail } from '../types';
 import { LoadingSpinner } from '../components/ui/LoadingSpinner';
-import { useClubSelection } from '../hooks/useClubSelection';
 import { getClubAccent } from '../utils/categoryIcons';
 import { getLogoUrl } from '../utils/logoHelper';
-import { SelectionTray } from '../components/club/SelectionTray';
+import { useClubSelection } from '../hooks/useClubSelection';
 
 export const ClubDetailsPage: React.FC = () => {
   const { slug } = useParams<{ slug: string }>();
@@ -19,7 +18,7 @@ export const ClubDetailsPage: React.FC = () => {
   const [isLiked, setIsLiked] = useState<boolean>(false);
   const [btnHover, setBtnHover] = useState<boolean>(false);
 
-  const { selectedClubs, toggleClub, isSelected, removeClub, clearSelection } = useClubSelection();
+  const { selectedClubs, toggleClub, isSelected } = useClubSelection();
 
   useEffect(() => {
     if (slug) fetchClubDetail(slug);
@@ -60,8 +59,11 @@ export const ClubDetailsPage: React.FC = () => {
   const accent = getClubAccent(club.category, club.name);
   const selected = isSelected(club.slug);
 
-  // Single 3:4 portrait image source (prefer dedicated detail logo image, fallback to banner)
-  const singleDetailImage = getLogoUrl(club.logo || club.banner);
+  // 1. Dedicated 3:4 Portrait image asset for Club Detail page (detail_image, fallback to banner)
+  const portraitImage = getLogoUrl(club.detail_image || club.banner || club.logo);
+
+  // 2. Transparent PNG logo asset
+  const logoUrl = getLogoUrl(club.logo);
 
   return (
     <div className="portal-bg min-h-screen py-6 sm:py-10 px-4 sm:px-8 relative pb-12">
@@ -75,21 +77,43 @@ export const ClubDetailsPage: React.FC = () => {
           Back to Directory
         </button>
 
-        {/* Editorial Product Card Container (Card 12 Reference Structure) */}
+        {/* Editorial Product Card Container */}
         <div className="bg-slate-900 rounded-2xl border border-slate-800 shadow-xl overflow-hidden">
           
-          {/* 1. FULL-BLEED 3:4 SINGLE PORTRAIT IMAGE (NO PADDING, NO FLOATING LOGO) */}
+          {/* 1. FULL-BLEED 3:4 PORTRAIT IMAGE AREA (Strict 3:4 Aspect Ratio) */}
           <div className="relative w-full aspect-[3/4] max-h-[500px] sm:max-h-[560px] bg-slate-950 overflow-hidden">
-            {singleDetailImage ? (
+            {portraitImage ? (
               <img
-                src={singleDetailImage}
+                src={portraitImage}
                 alt={club.name}
                 className="w-full h-full object-cover"
               />
             ) : (
               <div className={`w-full h-full bg-gradient-to-br ${accent.gradientBg} flex items-center justify-center p-8 opacity-60`}>
-                <div className="w-20 h-20 rounded-2xl border border-slate-700/50 bg-slate-900/60 flex items-center justify-center text-slate-300">
+                <div className="w-20 h-20 text-slate-300">
                   {accent.icon}
+                </div>
+              </div>
+            )}
+
+            {/* Gradient Scrim for contrast */}
+            <div className="absolute inset-0 bg-gradient-to-t from-slate-950/80 via-transparent to-transparent opacity-80 pointer-events-none" />
+
+            {/* CLEAN FLOATING TRANSPARENT LOGO OVERLAY (Raw PNG Logo ONLY — NO container box, NO inner square, NO border) */}
+            {logoUrl && (
+              <div className="absolute bottom-4 left-4 z-10 flex items-center gap-3">
+                <img
+                  src={logoUrl}
+                  alt={`${club.name} Logo`}
+                  className="w-12 h-12 sm:w-14 sm:h-14 object-contain drop-shadow-xl shrink-0"
+                />
+                <div>
+                  <span className="text-[11px] font-bold text-indigo-400 uppercase tracking-wider block">
+                    SVEC Organisation
+                  </span>
+                  <span className="font-display font-bold text-sm sm:text-base text-slate-100 block drop-shadow-md">
+                    {club.name}
+                  </span>
                 </div>
               </div>
             )}
@@ -180,134 +204,11 @@ export const ClubDetailsPage: React.FC = () => {
                     )}
                   </button>
                 )}
-
-                {selected && club.registration_open && (
-                  <span className="text-[11px] font-medium text-emerald-400 flex items-center gap-1">
-                    <span className="w-1.5 h-1.5 rounded-full bg-emerald-400" />
-                    Added to registration cart below
-                  </span>
-                )}
               </div>
             </div>
-
-            {/* 3. ABOUT DESCRIPTION */}
-            {club.description && (
-              <div className="pt-4 border-t border-slate-800/80 space-y-2">
-                <h3 className="font-display font-bold text-lg text-slate-100">
-                  About {club.name}
-                </h3>
-                <p className="text-sm text-slate-300 leading-relaxed whitespace-pre-line">
-                  {club.description}
-                </p>
-              </div>
-            )}
-
-            {/* 4. WHAT WE DO */}
-            {club.what_we_do && club.what_we_do.length > 0 && (
-              <div className="space-y-3">
-                <h3 className="font-display font-bold text-lg text-slate-100">What We Do</h3>
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                  {club.what_we_do.map((act, i) => (
-                    <div
-                      key={i}
-                      className="flex items-center gap-3 p-3.5 rounded-xl bg-slate-950/60 border border-slate-800 text-xs font-medium text-slate-200"
-                    >
-                      <span className="w-2 h-2 rounded-full bg-indigo-400 shrink-0" />
-                      <span>{act}</span>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            )}
-
-            {/* 5. DOMAINS & FOCUS AREAS */}
-            {club.domains && club.domains.length > 0 && (
-              <div className="space-y-2">
-                <h3 className="font-display font-bold text-lg text-slate-100">Domains & Focus Areas</h3>
-                <div className="flex flex-wrap gap-2">
-                  {club.domains.map((dom, i) => (
-                    <span
-                      key={i}
-                      className="px-3 py-1 rounded-md bg-slate-800/60 border border-slate-700 text-xs font-medium text-slate-300"
-                    >
-                      #{dom}
-                    </span>
-                  ))}
-                </div>
-              </div>
-            )}
-
-            {/* 6. FACULTY COORDINATOR & LEADS */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 pt-4 border-t border-slate-800">
-              {club.faculty_coordinator && (
-                <div className="p-4 rounded-xl bg-slate-950/60 border border-slate-800">
-                  <span className="text-xs font-semibold text-indigo-400 uppercase tracking-wider block mb-1">
-                    Faculty Coordinator
-                  </span>
-                  <div className="font-display font-bold text-sm text-slate-100">{club.faculty_coordinator}</div>
-                </div>
-              )}
-
-              {club.leads && club.leads.length > 0 && (
-                <div className="p-4 rounded-xl bg-slate-950/60 border border-slate-800">
-                  <span className="text-xs font-semibold text-indigo-400 uppercase tracking-wider block mb-2">
-                    Student Leads & Office Bearers
-                  </span>
-                  <div className="space-y-1.5">
-                    {club.leads.map((lead, i) => (
-                      <div key={i} className="flex items-center justify-between text-xs">
-                        <span className="font-semibold text-slate-100">{lead.name}</span>
-                        {lead.role && <span className="text-slate-400">{lead.role}</span>}
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              )}
-            </div>
-
-            {/* 7. SOCIAL LINKS */}
-            <div className="pt-4 border-t border-slate-800 flex flex-wrap gap-3">
-              <a
-                href={club.instagram && club.instagram.startsWith('http') ? club.instagram : "https://www.instagram.com/sves_official_info?igsi=MW80ZXQzZzNoY24zaQ=="}
-                target="_blank"
-                rel="noreferrer"
-                className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-slate-800 border border-slate-700 text-xs font-medium text-slate-200 hover:border-slate-600 transition"
-              >
-                <Instagram className="w-4 h-4 text-pink-400" />
-                Instagram
-              </a>
-              <a
-                href={club.website && club.website.startsWith('http') ? club.website : "https://srivasaviengg.ac.in/"}
-                target="_blank"
-                rel="noreferrer"
-                className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-slate-800 border border-slate-700 text-xs font-medium text-slate-200 hover:border-slate-600 transition"
-              >
-                <Globe className="w-4 h-4 text-indigo-400" />
-                College Website
-              </a>
-              {club.linkedin && (
-                <a
-                  href={club.linkedin}
-                  target="_blank"
-                  rel="noreferrer"
-                  className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-slate-800 border border-slate-700 text-xs font-medium text-slate-200 hover:border-slate-600 transition"
-                >
-                  <Linkedin className="w-4 h-4 text-sky-400" />
-                  LinkedIn
-                </a>
-              )}
-            </div>
-
           </div>
         </div>
       </div>
-
-      {/* Persistent Selection Tray Bar on Club Details Page */}
-      <SelectionTray
-        selectedClubs={selectedClubs}
-        onRemoveClub={removeClub}
-        onClear={clearSelection}
-      />
     </div>
   );
 };
