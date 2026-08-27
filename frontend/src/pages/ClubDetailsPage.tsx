@@ -60,9 +60,12 @@ export const ClubDetailsPage: React.FC = () => {
   const accent = getClubAccent(club.category, club.name);
   const selected = isSelected(club.slug);
 
+  // Single 3:4 portrait image source (prefer dedicated detail logo image, fallback to banner)
+  const singleDetailImage = getLogoUrl(club.logo || club.banner);
+
   return (
     <div className="portal-bg min-h-screen py-6 sm:py-10 px-4 sm:px-8 relative pb-28">
-      <div className="max-w-4xl mx-auto space-y-6">
+      <div className="max-w-3xl mx-auto space-y-5">
         {/* Navigation Breadcrumb */}
         <button
           onClick={() => navigate('/')}
@@ -72,229 +75,234 @@ export const ClubDetailsPage: React.FC = () => {
           Back to Directory
         </button>
 
-        {/* Profile Card Container */}
-        <div className="bg-slate-900 rounded-2xl p-6 sm:p-8 border border-slate-800 space-y-8 relative overflow-hidden">
+        {/* Editorial Product Card Container (Card 12 Reference Structure) */}
+        <div className="bg-slate-900 rounded-2xl border border-slate-800 shadow-xl overflow-hidden">
           
-          {/* 1. HERO VISUAL AREA */}
-          <div className="w-full h-56 sm:h-72 rounded-xl bg-slate-950 border border-slate-800 p-6 flex flex-col justify-between relative overflow-hidden group">
-            {/* Custom Banner Cover Image if set */}
-            {club.banner ? (
+          {/* 1. FULL-BLEED 3:4 SINGLE PORTRAIT IMAGE (NO PADDING, NO FLOATING LOGO) */}
+          <div className="relative w-full aspect-[3/4] max-h-[500px] sm:max-h-[560px] bg-slate-950 overflow-hidden">
+            {singleDetailImage ? (
               <img
-                src={getLogoUrl(club.banner)}
+                src={singleDetailImage}
                 alt={club.name}
-                className="absolute inset-0 w-full h-full object-cover z-0 opacity-80 group-hover:scale-105 transition-transform duration-500"
+                className="w-full h-full object-cover"
               />
             ) : (
-              <div className={`absolute inset-0 z-0 opacity-40 bg-gradient-to-br ${accent.gradientBg}`} />
+              <div className={`w-full h-full bg-gradient-to-br ${accent.gradientBg} flex items-center justify-center p-8 opacity-60`}>
+                <div className="w-20 h-20 rounded-2xl border border-slate-700/50 bg-slate-900/60 flex items-center justify-center text-slate-300">
+                  {accent.icon}
+                </div>
+              </div>
             )}
-            <div className="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-950/50 to-transparent z-0 pointer-events-none" />
 
-            {/* Top Row: Category Badge & Favorite Toggle */}
-            <div className="flex items-center justify-between z-10">
-              <span className={`text-xs font-semibold border px-3 py-1 rounded-md ${accent.badgeClass}`}>
-                {accent.categoryLabel}
-              </span>
-              <button
-                onClick={() => setIsLiked(!isLiked)}
-                className={`p-2.5 rounded-lg border border-slate-700 backdrop-blur-md transition ${
-                  isLiked ? 'bg-indigo-600 text-white border-indigo-500' : 'bg-slate-900/60 text-slate-300 hover:text-white'
-                }`}
-                title="Favorite"
-              >
-                <Heart className={`w-4 h-4 ${isLiked ? 'fill-white' : ''}`} />
-              </button>
-            </div>
-
-            {/* Bottom Row inside Media: Logo & SVEC Brand (3:4 Instagram Portrait Ratio Box) */}
-            <div className="flex items-center gap-4 z-10">
-              <div className={`w-24 sm:w-28 aspect-[3/4] rounded-xl border p-1 flex items-center justify-center overflow-hidden shrink-0 shadow-lg ${accent.bgTint}`}>
-                {getLogoUrl(club.logo) ? (
-                  <img src={getLogoUrl(club.logo)} alt={club.name} className="w-full h-full object-cover rounded-lg" />
-                ) : (
-                  accent.icon
-                )}
-              </div>
-              <div>
-                <span className="text-xs font-bold text-indigo-400 uppercase tracking-wider block">
-                  Sri Vasavi Engineering College
-                </span>
-                <h2 className="font-display font-bold text-xl sm:text-2xl text-slate-100">
-                  {club.name}
-                </h2>
-              </div>
-            </div>
+            {/* Floating Heart Favorite Button (Top-Right of Image) */}
+            <button
+              onClick={() => setIsLiked(!isLiked)}
+              className={`absolute top-4 right-4 z-10 w-9 h-9 rounded-full border flex items-center justify-center backdrop-blur-md transition-all ${
+                isLiked
+                  ? 'bg-indigo-600 border-indigo-500 text-white shadow-sm'
+                  : 'bg-slate-950/60 border-slate-700/60 text-slate-300 hover:bg-slate-900 hover:text-white'
+              }`}
+              title="Favorite"
+            >
+              <Heart className={`w-4 h-4 ${isLiked ? 'fill-white text-white' : 'text-slate-300'}`} />
+            </button>
           </div>
 
-          {/* 2. CLUB IDENTITY & PRIMARY JOIN CTA WITH INLINE FEEDBACK */}
-          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-6 pb-6 border-b border-slate-800">
+          {/* 2. FLAT CONTENT SECTION BELOW IMAGE */}
+          <div className="p-6 sm:p-8 space-y-6">
+            
+            {/* Category & Registration Status Row */}
+            <div className="flex items-center justify-between gap-3">
+              <span className="text-xs font-semibold uppercase tracking-wider text-indigo-400 bg-indigo-950/40 border border-indigo-800/40 px-2.5 py-1 rounded-md">
+                {accent.categoryLabel}
+              </span>
+              <div className="flex items-center gap-1.5">
+                <span className={`w-2 h-2 rounded-full ${club.registration_open ? 'bg-emerald-400' : 'bg-slate-600'}`} />
+                <span className="text-xs font-medium text-slate-400">
+                  {club.registration_open ? 'Open for Joining' : 'Registration Closed'}
+                </span>
+              </div>
+            </div>
+
+            {/* Club Name & Short Tagline */}
             <div>
               <h1 className="font-display font-bold text-2xl sm:text-3xl text-slate-100">
                 {club.name}
               </h1>
               {club.tagline && (
-                <p className="text-sm text-slate-300 mt-1">
+                <p className="text-sm sm:text-base text-slate-300 mt-2 leading-relaxed">
                   {club.tagline}
                 </p>
               )}
             </div>
 
-            {/* Join Button with Clear Inline Feedback */}
-            <div className="w-full sm:w-auto shrink-0 flex flex-col items-end gap-1.5">
-              {!club.registration_open ? (
-                <span className="w-full sm:w-auto inline-flex items-center justify-center px-6 py-2.5 rounded-lg bg-slate-800 border border-slate-700 text-slate-400 font-semibold text-xs uppercase tracking-wider">
-                  Registration Closed
+            {/* Action Row: Primary Join / Select CTA Button */}
+            <div className="pt-4 border-t border-slate-800/80 flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-4">
+              <div className="flex flex-col gap-1">
+                <span className="text-xs font-semibold text-slate-400">Status</span>
+                <span className="text-sm font-medium text-slate-200">
+                  {club.registration_open ? 'Available for Orientation 2026' : 'Registration Currently Closed'}
                 </span>
-              ) : (
-                <button
-                  onClick={() => toggleClub(club)}
-                  onMouseEnter={() => setBtnHover(true)}
-                  onMouseLeave={() => setBtnHover(false)}
-                  className={`w-full sm:w-auto inline-flex items-center justify-center gap-2 px-6 py-3 rounded-lg font-semibold text-sm transition-all duration-150 ${
-                    selected
-                      ? btnHover
-                        ? 'bg-red-600 text-white border border-red-500 shadow-sm'
-                        : 'bg-emerald-600 text-white border border-emerald-500 shadow-sm'
-                      : 'bg-indigo-600 hover:bg-indigo-500 text-white shadow-sm'
-                  }`}
-                >
-                  {selected ? (
-                    btnHover ? (
-                      <>
-                        <Trash2 className="w-4 h-4" />
-                        Remove from Selection
-                      </>
-                    ) : (
-                      <>
-                        <Check className="w-4 h-4 stroke-[3]" />
-                        ✓ Selected for Registration
-                      </>
-                    )
-                  ) : (
-                    '+ Select This Club'
-                  )}
-                </button>
-              )}
-
-              {selected && club.registration_open && (
-                <span className="text-[11px] font-medium text-emerald-400 flex items-center gap-1">
-                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-400" />
-                  Added to registration cart below
-                </span>
-              )}
-            </div>
-          </div>
-
-          {/* 3. ABOUT DESCRIPTION */}
-          {club.description && (
-            <div className="space-y-2">
-              <h3 className="font-display font-bold text-lg text-slate-100">
-                About {club.name}
-              </h3>
-              <p className="text-sm text-slate-300 leading-relaxed whitespace-pre-line">
-                {club.description}
-              </p>
-            </div>
-          )}
-
-          {/* 4. WHAT WE DO */}
-          {club.what_we_do && club.what_we_do.length > 0 && (
-            <div className="space-y-3">
-              <h3 className="font-display font-bold text-lg text-slate-100">What We Do</h3>
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                {club.what_we_do.map((act, i) => (
-                  <div
-                    key={i}
-                    className="flex items-center gap-3 p-3.5 rounded-xl bg-slate-950/60 border border-slate-800 text-xs font-medium text-slate-200"
-                  >
-                    <span className="w-2 h-2 rounded-full bg-indigo-400 shrink-0" />
-                    <span>{act}</span>
-                  </div>
-                ))}
               </div>
-            </div>
-          )}
 
-          {/* 5. DOMAINS & FOCUS AREAS */}
-          {club.domains && club.domains.length > 0 && (
-            <div className="space-y-2">
-              <h3 className="font-display font-bold text-lg text-slate-100">Domains & Focus Areas</h3>
-              <div className="flex flex-wrap gap-2">
-                {club.domains.map((dom, i) => (
-                  <span
-                    key={i}
-                    className="px-3 py-1 rounded-md bg-slate-800/60 border border-slate-700 text-xs font-medium text-slate-300"
-                  >
-                    #{dom}
+              <div className="flex flex-col items-stretch sm:items-end gap-1.5">
+                {!club.registration_open ? (
+                  <span className="px-6 py-2.5 rounded-lg bg-slate-800 border border-slate-700 text-slate-400 font-semibold text-xs uppercase tracking-wider text-center">
+                    Registration Closed
                   </span>
-                ))}
+                ) : (
+                  <button
+                    onClick={() => toggleClub(club)}
+                    onMouseEnter={() => setBtnHover(true)}
+                    onMouseLeave={() => setBtnHover(false)}
+                    className={`inline-flex items-center justify-center gap-2 px-6 py-3 rounded-lg font-semibold text-sm transition-all duration-150 ${
+                      selected
+                        ? btnHover
+                          ? 'bg-red-600 text-white border border-red-500 shadow-sm'
+                          : 'bg-emerald-600 text-white border border-emerald-500 shadow-sm'
+                        : 'bg-indigo-600 hover:bg-indigo-500 text-white shadow-sm'
+                    }`}
+                  >
+                    {selected ? (
+                      btnHover ? (
+                        <>
+                          <Trash2 className="w-4 h-4" />
+                          Remove from Selection
+                        </>
+                      ) : (
+                        <>
+                          <Check className="w-4 h-4 stroke-[3]" />
+                          ✓ Selected for Registration
+                        </>
+                      )
+                    ) : (
+                      '+ Select This Club'
+                    )}
+                  </button>
+                )}
+
+                {selected && club.registration_open && (
+                  <span className="text-[11px] font-medium text-emerald-400 flex items-center gap-1">
+                    <span className="w-1.5 h-1.5 rounded-full bg-emerald-400" />
+                    Added to registration cart below
+                  </span>
+                )}
               </div>
             </div>
-          )}
 
-          {/* 6. FACULTY COORDINATOR & LEADS */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 pt-4 border-t border-slate-800">
-            {club.faculty_coordinator && (
-              <div className="p-4 rounded-xl bg-slate-950/60 border border-slate-800">
-                <span className="text-xs font-semibold text-indigo-400 uppercase tracking-wider block mb-1">
-                  Faculty Coordinator
-                </span>
-                <div className="font-display font-bold text-sm text-slate-100">{club.faculty_coordinator}</div>
+            {/* 3. ABOUT DESCRIPTION */}
+            {club.description && (
+              <div className="pt-4 border-t border-slate-800/80 space-y-2">
+                <h3 className="font-display font-bold text-lg text-slate-100">
+                  About {club.name}
+                </h3>
+                <p className="text-sm text-slate-300 leading-relaxed whitespace-pre-line">
+                  {club.description}
+                </p>
               </div>
             )}
 
-            {club.leads && club.leads.length > 0 && (
-              <div className="p-4 rounded-xl bg-slate-950/60 border border-slate-800">
-                <span className="text-xs font-semibold text-indigo-400 uppercase tracking-wider block mb-2">
-                  Student Leads & Office Bearers
-                </span>
-                <div className="space-y-1.5">
-                  {club.leads.map((lead, i) => (
-                    <div key={i} className="flex items-center justify-between text-xs">
-                      <span className="font-semibold text-slate-100">{lead.name}</span>
-                      {lead.role && <span className="text-slate-400">{lead.role}</span>}
+            {/* 4. WHAT WE DO */}
+            {club.what_we_do && club.what_we_do.length > 0 && (
+              <div className="space-y-3">
+                <h3 className="font-display font-bold text-lg text-slate-100">What We Do</h3>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                  {club.what_we_do.map((act, i) => (
+                    <div
+                      key={i}
+                      className="flex items-center gap-3 p-3.5 rounded-xl bg-slate-950/60 border border-slate-800 text-xs font-medium text-slate-200"
+                    >
+                      <span className="w-2 h-2 rounded-full bg-indigo-400 shrink-0" />
+                      <span>{act}</span>
                     </div>
                   ))}
                 </div>
               </div>
             )}
-          </div>
 
-          {/* 7. SOCIAL LINKS */}
-          <div className="pt-4 border-t border-slate-800 flex flex-wrap gap-3">
-            <a
-              href={club.instagram && club.instagram.startsWith('http') ? club.instagram : "https://www.instagram.com/sves_official_info?igsi=MW80ZXQzZzNoY24zaQ=="}
-              target="_blank"
-              rel="noreferrer"
-              className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-slate-800 border border-slate-700 text-xs font-medium text-slate-200 hover:border-slate-600 transition"
-            >
-              <Instagram className="w-4 h-4 text-pink-400" />
-              Instagram
-            </a>
-            <a
-              href={club.website && club.website.startsWith('http') ? club.website : "https://srivasaviengg.ac.in/"}
-              target="_blank"
-              rel="noreferrer"
-              className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-slate-800 border border-slate-700 text-xs font-medium text-slate-200 hover:border-slate-600 transition"
-            >
-              <Globe className="w-4 h-4 text-indigo-400" />
-              College Website
-            </a>
-            {club.linkedin && (
+            {/* 5. DOMAINS & FOCUS AREAS */}
+            {club.domains && club.domains.length > 0 && (
+              <div className="space-y-2">
+                <h3 className="font-display font-bold text-lg text-slate-100">Domains & Focus Areas</h3>
+                <div className="flex flex-wrap gap-2">
+                  {club.domains.map((dom, i) => (
+                    <span
+                      key={i}
+                      className="px-3 py-1 rounded-md bg-slate-800/60 border border-slate-700 text-xs font-medium text-slate-300"
+                    >
+                      #{dom}
+                    </span>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* 6. FACULTY COORDINATOR & LEADS */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 pt-4 border-t border-slate-800">
+              {club.faculty_coordinator && (
+                <div className="p-4 rounded-xl bg-slate-950/60 border border-slate-800">
+                  <span className="text-xs font-semibold text-indigo-400 uppercase tracking-wider block mb-1">
+                    Faculty Coordinator
+                  </span>
+                  <div className="font-display font-bold text-sm text-slate-100">{club.faculty_coordinator}</div>
+                </div>
+              )}
+
+              {club.leads && club.leads.length > 0 && (
+                <div className="p-4 rounded-xl bg-slate-950/60 border border-slate-800">
+                  <span className="text-xs font-semibold text-indigo-400 uppercase tracking-wider block mb-2">
+                    Student Leads & Office Bearers
+                  </span>
+                  <div className="space-y-1.5">
+                    {club.leads.map((lead, i) => (
+                      <div key={i} className="flex items-center justify-between text-xs">
+                        <span className="font-semibold text-slate-100">{lead.name}</span>
+                        {lead.role && <span className="text-slate-400">{lead.role}</span>}
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+            </div>
+
+            {/* 7. SOCIAL LINKS */}
+            <div className="pt-4 border-t border-slate-800 flex flex-wrap gap-3">
               <a
-                href={club.linkedin}
+                href={club.instagram && club.instagram.startsWith('http') ? club.instagram : "https://www.instagram.com/sves_official_info?igsi=MW80ZXQzZzNoY24zaQ=="}
                 target="_blank"
                 rel="noreferrer"
                 className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-slate-800 border border-slate-700 text-xs font-medium text-slate-200 hover:border-slate-600 transition"
               >
-                <Linkedin className="w-4 h-4 text-sky-400" />
-                LinkedIn
+                <Instagram className="w-4 h-4 text-pink-400" />
+                Instagram
               </a>
-            )}
+              <a
+                href={club.website && club.website.startsWith('http') ? club.website : "https://srivasaviengg.ac.in/"}
+                target="_blank"
+                rel="noreferrer"
+                className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-slate-800 border border-slate-700 text-xs font-medium text-slate-200 hover:border-slate-600 transition"
+              >
+                <Globe className="w-4 h-4 text-indigo-400" />
+                College Website
+              </a>
+              {club.linkedin && (
+                <a
+                  href={club.linkedin}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-slate-800 border border-slate-700 text-xs font-medium text-slate-200 hover:border-slate-600 transition"
+                >
+                  <Linkedin className="w-4 h-4 text-sky-400" />
+                  LinkedIn
+                </a>
+              )}
+            </div>
+
           </div>
         </div>
       </div>
 
-      {/* Persistent Selection Tray Bar on Club Details Page (E-commerce cart feedback) */}
+      {/* Persistent Selection Tray Bar on Club Details Page */}
       <SelectionTray
         selectedClubs={selectedClubs}
         onRemoveClub={removeClub}
